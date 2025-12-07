@@ -51,10 +51,11 @@ fun MyScreen(
     val userName by viewModel.userName.collectAsState()
     val password by viewModel.password.collectAsState()
     val refreshToken by viewModel.refreshToken.collectAsState()
+    val accessToken = viewModel.accessToken
 
     Column(modifier) {
         LoginScreen(userName = userName, password = password, onLogin = viewModel::onLogin)
-        CredentialScreen(userName = userName, password = password, refreshToken = refreshToken)
+        CredentialScreen(userName = userName, password = password, refreshToken = refreshToken, accessToken = accessToken)
     }
 }
 
@@ -97,6 +98,7 @@ fun CredentialScreen(
     userName: String,
     password: String,
     refreshToken: String,
+    accessToken: String,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -110,6 +112,10 @@ fun CredentialScreen(
         )
         Text(
             text = "Refresh Token: $refreshToken",
+            modifier = modifier,
+        )
+        Text(
+            text = "Access Token: $accessToken",
             modifier = modifier,
         )
     }
@@ -135,6 +141,7 @@ fun CredentialScreenPreview() {
             userName = "Android",
             password = "secret",
             refreshToken = "aaa#123",
+            accessToken = "bbb#456",
         )
     }
 }
