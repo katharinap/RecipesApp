@@ -1,4 +1,4 @@
-package com.katharina.recipesapp
+package com.katharina.recipesapp.ui.login
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,9 +21,9 @@ class LoginViewModel
         private val credentialsDataStore: CredentialsDataStore,
         private val apiService: ApiService,
     ) : ViewModel() {
-        val userName = credentialsDataStore.userNameFlow().stateIn(viewModelScope, SharingStarted.Lazily, "")
-        val password = credentialsDataStore.passwordFlow().stateIn(viewModelScope, SharingStarted.Lazily, "")
-        val refreshToken = credentialsDataStore.refreshTokenFlow().stateIn(viewModelScope, SharingStarted.Lazily, "")
+        val userName = credentialsDataStore.userNameFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
+        val password = credentialsDataStore.passwordFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
+        val refreshToken = credentialsDataStore.refreshTokenFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
         var accessToken by mutableStateOf("")
             private set
 

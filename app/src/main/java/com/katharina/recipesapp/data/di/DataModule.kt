@@ -3,8 +3,11 @@ package com.katharina.recipesapp.data.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.katharina.recipesapp.data.DefaultRecipesRepository
+import com.katharina.recipesapp.data.RecipeRepository
 import com.katharina.recipesapp.data.credentials.Credentials
 import com.katharina.recipesapp.data.credentials.CredentialsSerializer
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +25,15 @@ private val Context.dataStore: DataStore<Credentials> by dataStore(
 object DataModule {
     @Provides
     @Singleton
-    fun provideCredentialsDataStore(@ApplicationContext context: Context): DataStore<Credentials> {
-        return context.dataStore
-    }
+    fun provideCredentialsDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Credentials> = context.dataStore
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RecipeRepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindRecipeRepository(repository: DefaultRecipesRepository): RecipeRepository
 }
