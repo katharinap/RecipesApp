@@ -24,7 +24,7 @@ class RecipeDetailsViewModel
             val recipe: Recipe?,
         )
 
-        private val recipeId: Int = 2 // savedStateHandle.get<Int>("recipeId")!!
+        private val recipeId: Int = savedStateHandle.get<Int>("recipeId")!!
 
         val uiState: StateFlow<UiState> =
             recipeRepository
@@ -43,8 +43,4 @@ class RecipeDetailsViewModel
                             recipe = null,
                         ),
                 )
-
-//        fun setRecipeId(recipeId: Int) {
-//            savedStateHandle["recipeId"] = recipeId
-//        }
     }
