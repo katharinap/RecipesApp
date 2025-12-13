@@ -9,12 +9,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-//    private val viewModelList: RecipeListViewModel by viewModels()
-//    private val viewModelDetail: RecipeDetailsViewModel by viewModels()
-//    private val viewModelLogin: LoginViewModel by viewModels()
-//
-//    private val screenName = "Login"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,15 +17,6 @@ class MainActivity : ComponentActivity() {
                 AppNavHost(
                     startDestination = AppDestination.RecipeList,
                 )
-//                if (screenName == "List") {
-//                    RecipeListScreen(viewModelList, onRecipeSelected = {})
-//                } else if (screenName == "Details") {
-//                    RecipeDetailsScreen(viewModelDetail)
-//                } else if (screenName == "Login") {
-//                    LoginScreenDummy(viewModel = viewModelLogin)
-//                } else {
-//                    Text("Error")
-//                }
             }
         }
     }
