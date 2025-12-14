@@ -22,11 +22,23 @@ fun LoginScreenDummy(
     val userName by viewModel.userName.collectAsState()
     val password by viewModel.password.collectAsState()
     val refreshToken by viewModel.refreshToken.collectAsState()
-    val accessToken = viewModel.accessToken
+    val accessToken by viewModel.accessToken.collectAsState()
 
     Column(modifier) {
         LoginScreen(userName = userName, password = password, onLogin = viewModel::onLogin)
         CredentialScreen(userName = userName, password = password, refreshToken = refreshToken, accessToken = accessToken)
+        Button(
+            onClick = viewModel::refreshTokens,
+            modifier = modifier,
+        ) {
+            Text("Refresh Tokens")
+        }
+        Button(
+            onClick = { viewModel.fetchRecipe42() },
+            modifier = modifier,
+        ) {
+            Text("Fetch Recipe 42")
+        }
     }
 }
 

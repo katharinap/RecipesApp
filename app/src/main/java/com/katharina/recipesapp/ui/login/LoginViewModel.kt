@@ -1,13 +1,12 @@
 package com.katharina.recipesapp.ui.login
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katharina.recipesapp.data.credentials.CredentialsDataStore
-import com.katharina.recipesapp.data.network.ApiService
+import com.katharina.recipesapp.data.network.AuthenticatedService
 import com.katharina.recipesapp.data.network.LoginRequest
+import com.katharina.recipesapp.data.network.LoginService
+import com.katharina.recipesapp.data.network.RefreshTokenService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -19,13 +18,14 @@ class LoginViewModel
     @Inject
     constructor(
         private val credentialsDataStore: CredentialsDataStore,
-        private val apiService: ApiService,
+        private val loginService: LoginService,
+        private val refreshTokenService: RefreshTokenService,
+        private val apiService: AuthenticatedService,
     ) : ViewModel() {
         val userName = credentialsDataStore.userNameFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
         val password = credentialsDataStore.passwordFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
         val refreshToken = credentialsDataStore.refreshTokenFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
-        var accessToken by mutableStateOf("")
-            private set
+        val accessToken = credentialsDataStore.accessTokenFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
 
         fun onLogin(
             userName: String,
@@ -37,9 +37,9 @@ class LoginViewModel
 
             viewModelScope.launch {
                 try {
-                    val response = apiService.login(LoginRequest(userName, password))
+                    val response = loginService.login(LoginRequest(userName, password))
 
-                    accessToken = response.accessToken
+                    credentialsDataStore.updateAccessToken(response.accessToken)
                     credentialsDataStore.updateRefreshToken(response.refreshToken)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -53,6 +53,29 @@ class LoginViewModel
         ) {
             viewModelScope.launch {
                 credentialsDataStore.updateLoginData(userName, password)
+            }
+        }
+
+        fun refreshTokens() {
+            viewModelScope.launch {
+                try {
+                    val response = refreshTokenService.refreshToken(refreshToken.value)
+                    credentialsDataStore.updateAccessToken(response.accessToken)
+                    credentialsDataStore.updateRefreshToken(response.refreshToken)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        fun fetchRecipe42() {
+            viewModelScope.launch {
+                try {
+                    val response = apiService.getRecipe(accessToken.value)
+                    println(response)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

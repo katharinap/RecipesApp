@@ -27,6 +27,11 @@ class CredentialsDataStore
                 credentials.refreshToken
             }
 
+        fun accessTokenFlow(): Flow<String> =
+            dataStore.data.map { credentials ->
+                credentials.accessToken
+            }
+
         suspend fun updateLoginData(
             userName: String,
             password: String,
@@ -39,6 +44,12 @@ class CredentialsDataStore
         suspend fun updateRefreshToken(refreshToken: String) {
             dataStore.updateData { credentials ->
                 credentials.copy(refreshToken = refreshToken)
+            }
+        }
+
+        suspend fun updateAccessToken(accessToken: String) {
+            dataStore.updateData { credentials ->
+                credentials.copy(accessToken = accessToken)
             }
         }
     }

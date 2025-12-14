@@ -10,4 +10,7 @@ sealed class AppDestination {
     data class RecipeDetails(
         val recipeId: Int? = -1,
     ) : AppDestination()
+
+    @Serializable
+    data object Login : AppDestination()
 }
