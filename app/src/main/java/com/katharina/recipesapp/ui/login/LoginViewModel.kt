@@ -3,7 +3,7 @@ package com.katharina.recipesapp.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katharina.recipesapp.data.credentials.CredentialsDataStore
-import com.katharina.recipesapp.data.network.AuthenticatedService
+import com.katharina.recipesapp.data.network.ApiService
 import com.katharina.recipesapp.data.network.LoginRequest
 import com.katharina.recipesapp.data.network.LoginService
 import com.katharina.recipesapp.data.network.RefreshTokenService
@@ -20,7 +20,7 @@ class LoginViewModel
         private val credentialsDataStore: CredentialsDataStore,
         private val loginService: LoginService,
         private val refreshTokenService: RefreshTokenService,
-        private val apiService: AuthenticatedService,
+        private val apiService: ApiService,
     ) : ViewModel() {
         val userName = credentialsDataStore.userNameFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
         val password = credentialsDataStore.passwordFlow().stateIn(viewModelScope, SharingStarted.Companion.Lazily, "")
@@ -68,10 +68,21 @@ class LoginViewModel
             }
         }
 
+        fun fetchRecipes() {
+            viewModelScope.launch {
+                try {
+                    val response = apiService.getRecipes(accessToken = accessToken.value)
+                    println(response)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         fun fetchRecipe42() {
             viewModelScope.launch {
                 try {
-                    val response = apiService.getRecipe(accessToken.value)
+                    val response = apiService.getRecipe(recipeId = 42, accessToken = accessToken.value)
                     println(response)
                 } catch (e: Exception) {
                     e.printStackTrace()

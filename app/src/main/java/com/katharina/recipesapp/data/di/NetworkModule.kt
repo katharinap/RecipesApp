@@ -3,10 +3,9 @@ package com.katharina.recipesapp.data.di
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.katharina.recipesapp.data.network.AccessTokenInterceptor
 import com.katharina.recipesapp.data.network.ApiAuthenticator
-import com.katharina.recipesapp.data.network.AuthenticatedService
+import com.katharina.recipesapp.data.network.ApiService
 import com.katharina.recipesapp.data.network.Constants
 import com.katharina.recipesapp.data.network.LoginService
-import com.katharina.recipesapp.data.network.PublicApiService
 import com.katharina.recipesapp.data.network.RefreshTokenInterceptor
 import com.katharina.recipesapp.data.network.RefreshTokenService
 import dagger.Module
@@ -25,29 +24,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-//    @Provides
-//    fun provideBaseUrl(): String = Constants.BASE_URL
-//
-//    @Provides
-//    @Singleton
-//    fun provideRetrofit(baseUrl: String): Retrofit {
-//        val networkJson =
-//            Json {
-//                ignoreUnknownKeys = true
-//                coerceInputValues = true
-//            }
-//
-//        return Retrofit
-//            .Builder()
-//            .baseUrl(baseUrl)
-//            .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
-//            .build()
-//    }
-//
-//    @Provides
-//    @Singleton
-    fun provideApiService(retrofit: Retrofit): PublicApiService = retrofit.create(PublicApiService::class.java)
-
     // login
     @[Provides Singleton PublicClient]
     fun provideUnauthencatedOkHttpClient(): OkHttpClient {
@@ -138,12 +114,12 @@ object NetworkModule {
     @Singleton
     fun provideAuthenticatedApi(
         @AuthenticatedClient client: OkHttpClient,
-    ): AuthenticatedService =
+    ): ApiService =
         Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .client(client)
             .build()
-            .create(AuthenticatedService::class.java)
+            .create(ApiService::class.java)
 }

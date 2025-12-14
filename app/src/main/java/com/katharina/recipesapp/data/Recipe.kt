@@ -3,6 +3,7 @@ package com.katharina.recipesapp.data
 data class Recipe(
     val id: Int,
     val title: String,
-    val description: String,
-    val ingredients: List<String>,
+    val ingredients: List<String> = emptyList(),
+    val directions: List<String> = emptyList(),
+    val tags: List<String> = emptyList(),
 )

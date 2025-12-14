@@ -34,6 +34,12 @@ fun LoginScreenDummy(
             Text("Refresh Tokens")
         }
         Button(
+            onClick = { viewModel.fetchRecipes() },
+            modifier = modifier,
+        ) {
+            Text("Fetch Recipes")
+        }
+        Button(
             onClick = { viewModel.fetchRecipe42() },
             modifier = modifier,
         ) {
