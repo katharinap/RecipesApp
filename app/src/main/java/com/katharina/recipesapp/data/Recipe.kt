@@ -6,4 +6,6 @@ data class Recipe(
     val ingredients: List<String> = emptyList(),
     val directions: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
+    val updatedAtRemotely: String = "",
+    val updatedAtLocally: String = "",
 )

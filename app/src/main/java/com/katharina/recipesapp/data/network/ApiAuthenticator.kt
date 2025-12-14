@@ -12,6 +12,7 @@ import javax.inject.Inject
 class ApiAuthenticator
     @Inject
     constructor(
+        private val loginService: LoginService,
         private val refreshTokenService: RefreshTokenService,
         private val credentialsDataStore: CredentialsDataStore,
     ) : Authenticator {
@@ -21,6 +22,8 @@ class ApiAuthenticator
         ): Request? {
             val currentAccessToken = runBlocking { credentialsDataStore.accessTokenFlow().first() }
             val refreshToken = runBlocking { credentialsDataStore.refreshTokenFlow().first() }
+            val userName = runBlocking { credentialsDataStore.userNameFlow().first() }
+            val password = runBlocking { credentialsDataStore.passwordFlow().first() }
 
             synchronized(this) {
                 val updatedAccessToken = runBlocking { credentialsDataStore.accessTokenFlow().first() }
@@ -30,14 +33,23 @@ class ApiAuthenticator
                         updatedAccessToken
                     } else {
                         val newSessionResponse = runBlocking { refreshTokenService.refreshToken(refreshToken) }
-                        if (newSessionResponse.accessToken != null && newSessionResponse.refreshToken != null) {
+                        if (newSessionResponse.isSuccessful) {
                             runBlocking {
-                                credentialsDataStore.updateAccessToken(newSessionResponse.accessToken)
-                                credentialsDataStore.updateRefreshToken(newSessionResponse.refreshToken)
+                                credentialsDataStore.updateAccessToken(newSessionResponse.body()?.accessToken ?: "")
+                                credentialsDataStore.updateRefreshToken(newSessionResponse.body()?.refreshToken ?: "")
                             }
-                            newSessionResponse.accessToken
+                            newSessionResponse.body()?.accessToken
                         } else {
-                            null
+                            val loginResponse = runBlocking { loginService.login(LoginRequest(userName = userName, password = password)) }
+                            if (loginResponse.isSuccessful) {
+                                runBlocking {
+                                    credentialsDataStore.updateAccessToken(loginResponse.body()?.accessToken ?: "")
+                                    credentialsDataStore.updateRefreshToken(loginResponse.body()?.refreshToken ?: "")
+                                }
+                                loginResponse.body()?.accessToken
+                            } else {
+                                null
+                            }
                         }
                     }
 

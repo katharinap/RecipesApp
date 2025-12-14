@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.katharina.recipesapp.ui.login.LoginScreenDummy
+import com.katharina.recipesapp.ui.login.LoginScreen
 import com.katharina.recipesapp.ui.login.LoginViewModel
 import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsScreen
 import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsViewModel
@@ -39,7 +39,7 @@ fun AppNavHost(
         }
 
         composable<AppDestination.Login> { navBackStackEntry ->
-            LoginScreenDummy(viewModel = hiltViewModel<LoginViewModel>())
+            LoginScreen(viewModel = hiltViewModel<LoginViewModel>())
         }
     }
 }

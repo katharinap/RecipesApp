@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RecipesAppTheme {
                 AppNavHost(
-                    startDestination = AppDestination.Login,
+                    startDestination = AppDestination.RecipeList,
                 )
             }
         }
