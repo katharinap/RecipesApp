@@ -3,6 +3,7 @@ package com.katharina.recipesapp.data.network
 import com.katharina.recipesapp.data.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +40,11 @@ class DefaultNetworkRepository
             Recipe(
                 id = id,
                 title = name,
-                updatedAtRemotely = updatedAt,
+                updatedAtRemotely =
+                    LocalDateTime.ofInstant(
+                        java.time.Instant.parse(updatedAt),
+                        java.time.ZoneId.systemDefault(),
+                    ),
             )
 
         override suspend fun getRecipe(recipeId: Int): NetworkResult<Recipe> =
