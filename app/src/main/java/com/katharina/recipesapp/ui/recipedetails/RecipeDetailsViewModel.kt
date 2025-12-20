@@ -1,15 +1,17 @@
 package com.katharina.recipesapp.ui.recipedetails
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.data.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,28 +21,53 @@ class RecipeDetailsViewModel
         private val recipeRepository: RecipeRepository,
         private val savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
-        data class UiState(
-            val isLoading: Boolean,
-            val recipe: Recipe?,
-        )
+        sealed class UiState {
+            object Loading : UiState()
 
-        private val recipeId: Int = savedStateHandle.get<Int>("recipeId")!!
+            data class Success(
+                val recipe: Recipe,
+            ) : UiState()
+        }
 
-        val uiState: StateFlow<UiState> =
-            recipeRepository
-                .getRecipeById(id = recipeId)
-                .map { recipe ->
-                    UiState(
-                        isLoading = false,
-                        recipe = recipe,
-                    )
-                }.stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue =
-                        UiState(
-                            isLoading = true,
-                            recipe = null,
-                        ),
-                )
+        var message by mutableStateOf("")
+            private set
+        private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+        val uiState: StateFlow<UiState> = _uiState
+
+        init {
+            loadRecipe()
+        }
+
+        fun loadRecipe() {
+            val recipeId = savedStateHandle.get<Int>("recipeId")
+            if (recipeId != null) {
+                viewModelScope.launch {
+                    try {
+                        recipeRepository.getRecipeById(recipeId).collect { recipe ->
+                            if (recipe != null) {
+                                _uiState.value = UiState.Success(recipe)
+                            } else {
+                                message = "Failed to get recipe with id $recipeId"
+                            }
+                        }
+                    } catch (exception: Error) {
+                        message = exception.message ?: "Unknown error"
+                        println(exception.message)
+                    }
+                }
+            } else {
+                message = "Missing recipe id"
+            }
+        }
+
+        fun updateRecipe() {
+            viewModelScope.launch {
+                val recipeId = savedStateHandle.get<Int>("recipeId")
+                if (recipeId != null) {
+                    message = recipeRepository.updateRecipe(recipeId)
+                } else {
+                    message = "Missing recipe id"
+                }
+            }
+        }
     }

@@ -13,4 +13,6 @@ data class RecipeDetailsResponse(
     val tags: List<String>,
     @SerialName(value = "picture_path")
     val picturePath: String,
+    @SerialName(value = "updated_at")
+    val updatedAt: String,
 )

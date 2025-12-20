@@ -9,5 +9,11 @@ data class Recipe(
     val directions: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
     val updatedAtRemotely: LocalDateTime? = null,
-    val updatedAtLocally: LocalDateTime? = null,
-)
+    var updatedAtLocally: LocalDateTime? = null,
+) {
+    fun needsUpdate(): Boolean {
+        if (updatedAtRemotely == null) return true
+        if (updatedAtLocally == null) return true
+        return updatedAtRemotely.isAfter(updatedAtLocally)
+    }
+}

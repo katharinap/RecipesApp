@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class LoginViewModel
@@ -50,6 +51,7 @@ class LoginViewModel
             }
         }
 
+        @OptIn(ExperimentalTime::class)
         fun fetchRecipe(recipeId: Int) {
             viewModelScope.launch {
                 val response = networkRepository.getRecipe(recipeId = recipeId)

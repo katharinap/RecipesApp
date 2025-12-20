@@ -7,6 +7,8 @@ import com.katharina.recipesapp.data.DefaultRecipesRepository
 import com.katharina.recipesapp.data.RecipeRepository
 import com.katharina.recipesapp.data.credentials.Credentials
 import com.katharina.recipesapp.data.credentials.CredentialsSerializer
+import com.katharina.recipesapp.data.db.DbRepository
+import com.katharina.recipesapp.data.db.DefaultDbRepository
 import com.katharina.recipesapp.data.network.DefaultNetworkRepository
 import com.katharina.recipesapp.data.network.NetworkRepository
 import dagger.Binds
@@ -46,4 +48,12 @@ abstract class NetworkRepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNetworkRepository(repository: DefaultNetworkRepository): NetworkRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DbRepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindDbRepository(repository: DefaultDbRepository): DbRepository
 }

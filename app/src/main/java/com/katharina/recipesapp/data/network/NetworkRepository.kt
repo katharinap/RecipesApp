@@ -70,5 +70,10 @@ class DefaultNetworkRepository
                 ingredients = ingredients,
                 directions = directions,
                 tags = tags,
+                updatedAtRemotely =
+                    LocalDateTime.ofInstant(
+                        java.time.Instant.parse(updatedAt),
+                        java.time.ZoneId.systemDefault(),
+                    ),
             )
     }

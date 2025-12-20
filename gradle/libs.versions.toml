@@ -17,6 +17,8 @@ retrofit = "3.0.0"
 okhttp = "5.3.1"
 retrofit-kotlinx-serialization-converter = "1.0.0" # Version for the converter
 nav = "2.9.6"
+room = "2.8.3"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +44,9 @@ retrofit-kotlinx-serialization-converter = { group = "com.jakewharton.retrofit",
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav"}
 hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-nav"}
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

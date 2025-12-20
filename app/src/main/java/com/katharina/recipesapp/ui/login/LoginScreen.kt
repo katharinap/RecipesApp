@@ -1,9 +1,10 @@
 package com.katharina.recipesapp.ui.login
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,9 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 
 // @Composable
 // fun LoginScreenDummy(
@@ -60,26 +58,40 @@ fun LoginScreen(
     var myUserName by remember { mutableStateOf(userName) }
     var myPassword by remember { mutableStateOf(password) }
 
-    Column(modifier = modifier) {
-        OutlinedTextField(
-            value = myUserName,
-            onValueChange = { myUserName = it },
-            label = { Text("Username") },
-            modifier = modifier,
-        )
+    Scaffold(modifier = Modifier.fillMaxSize()) { _innerPadding ->
+        Column(modifier = modifier) {
+            OutlinedTextField(
+                value = myUserName,
+                onValueChange = { myUserName = it },
+                label = { Text("Username") },
+                modifier = modifier,
+            )
 
-        OutlinedTextField(
-            value = myPassword,
-            onValueChange = { myPassword = it },
-            label = { Text("Password") },
-            modifier = modifier,
-        )
+            OutlinedTextField(
+                value = myPassword,
+                onValueChange = { myPassword = it },
+                label = { Text("Password") },
+                modifier = modifier,
+            )
 
-        Button(
-            onClick = { viewModel.updateCredentials(myUserName, myPassword) },
-            modifier = modifier,
-        ) {
-            Text("Login")
+            Button(
+                onClick = { viewModel.updateCredentials(myUserName, myPassword) },
+                modifier = modifier,
+            ) {
+                Text("Login")
+            }
+            Button(
+                onClick = { viewModel.fetchRecipes() },
+                modifier = modifier,
+            ) {
+                Text("Fetch Recipes")
+            }
+            Button(
+                onClick = { viewModel.fetchRecipe(42) },
+                modifier = modifier,
+            ) {
+                Text("Fetch Recipe 42")
+            }
         }
     }
 }
