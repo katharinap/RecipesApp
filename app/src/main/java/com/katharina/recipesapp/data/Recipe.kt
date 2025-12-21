@@ -9,7 +9,7 @@ data class Recipe(
     val directions: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
     val updatedAtRemotely: LocalDateTime? = null,
-    var updatedAtLocally: LocalDateTime? = null,
+    val updatedAtLocally: LocalDateTime? = null,
 ) {
     fun needsUpdate(): Boolean {
         if (updatedAtRemotely == null) return true

@@ -13,6 +13,4 @@ data class DbRecipe(
     val directions: List<String>,
     val updatedAtRemotely: LocalDateTime?,
     val updatedAtLocally: LocalDateTime?,
-) {
-    fun needsUpdate(): Boolean = updatedAtRemotely?.isAfter(updatedAtLocally) ?: false
-}
+)
