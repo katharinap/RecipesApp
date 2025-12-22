@@ -1,19 +1,17 @@
 package com.katharina.recipesapp.ui.recipedetails
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,11 +24,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.katharina.recipesapp.R
+import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
+import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -50,47 +55,18 @@ fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
-                    TopAppBar(
-                        title = { Text(text = recipe.title) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors =
-                            topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary,
-                            ),
-                    )
+                    RecipeDetailsTopBar(recipe = recipe)
                 },
                 bottomBar = {
-                    BottomAppBar(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        windowInsets = BottomAppBarDefaults.windowInsets,
-                    ) {
-                        Column {
-                            Text(
-                                text = "Last updated remotely: ${recipe.updatedAtRemotely}",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            Text(
-                                text = "Last updated locally: ${recipe.updatedAtLocally}",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
+                    RecipeDetailsBottomBar(recipe = recipe)
                 },
                 floatingActionButton = {
-                    if (recipe.needsUpdate()) {
-                        FloatingActionButton(
-                            onClick = { viewModel.updateRecipe() },
-                        ) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
-                        }
-                    }
+                    RecipeDetailsRefreshButton(recipe = recipe, onRefresh = viewModel::updateRecipe)
                 },
             ) { innerPadding ->
 
                 RecipeDetails(
-                    uiState as RecipeDetailsViewModel.UiState.Success,
+                    recipe = recipe,
                     Modifier.padding(innerPadding),
                 )
             }
@@ -101,45 +77,153 @@ fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetails(
-    uiState: RecipeDetailsViewModel.UiState.Success,
+    recipe: Recipe,
     modifier: Modifier,
 ) {
-    val recipe = uiState.recipe
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .fillMaxWidth()
-                .fillMaxHeight(),
-        verticalArrangement = Arrangement.spacedBy(0.dp),
-        horizontalAlignment = Alignment.End,
-    ) {
+    Column(modifier = modifier.then(Modifier.background(color = MaterialTheme.colorScheme.background))) {
         Row(modifier = Modifier.padding(4.dp)) {
+            Icon(
+                painter = painterResource(R.drawable.outline_tag_24),
+                contentDescription = "Tags",
+                tint = MaterialTheme.colorScheme.tertiary,
+            )
             recipe.tags.forEach { tag ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Text(text = tag, style = MaterialTheme.typography.bodyMedium)
+                Box(
+                    modifier =
+                        Modifier
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(percent = 25))
+                            .background(color = MaterialTheme.colorScheme.tertiaryContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = tag,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(4.dp),
+                    )
                 }
             }
         }
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        ) {
-            Text(text = "Ingredients", style = MaterialTheme.typography.headlineMedium)
-            recipe.ingredients.forEach { ingredient ->
-                Text(text = "- $ingredient", style = MaterialTheme.typography.bodyLarge)
-            }
+        Text(text = "Ingredients", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        recipe.ingredients.forEach { ingredient ->
+            Text(text = "- $ingredient", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
         }
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        ) {
-            Text(text = "Directions", style = MaterialTheme.typography.headlineMedium)
-            recipe.directions.forEach { direction ->
-                Text(text = "- $direction", style = MaterialTheme.typography.bodyLarge)
-            }
+        Text(text = "Directions", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        recipe.directions.forEach { direction ->
+            Text(text = direction, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecipeDetailsTopBar(recipe: Recipe) {
+    TopAppBar(
+        title = {
+            Row {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_cookie_24),
+                    contentDescription = "Cookie",
+                )
+                Text(
+                    text = recipe.title,
+                    modifier =
+                        Modifier.padding(
+                            start = 10.dp,
+                        ),
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        colors =
+            topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+            ),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecipeDetailsBottomBar(recipe: Recipe) {
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary,
+        windowInsets = BottomAppBarDefaults.windowInsets,
+    ) {
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+        Column {
+            Text(
+                text = "Last updated remotely: ${recipe.updatedAtRemotely?.format(formatter)}",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Text(
+                text = "Last updated locally: ${recipe.updatedAtLocally?.format(formatter)}",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+}
+
+@Composable
+fun RecipeDetailsRefreshButton(
+    recipe: Recipe,
+    onRefresh: () -> Unit,
+) {
+    if (recipe.needsUpdate()) {
+        FloatingActionButton(
+            onClick = { onRefresh() },
+        ) {
+            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun RecipeDetailsTopBarPreview() {
+    val recipe =
+        Recipe(
+            id = 1,
+            title = "Recipe 1",
+        )
+    RecipesAppTheme {
+        RecipeDetailsTopBar(recipe = recipe)
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun RecipeDetailsPreview() {
+    val recipe =
+        Recipe(
+            id = 1,
+            title = "Recipe 1",
+            ingredients = listOf("Ingredient 1", "Ingredient 2"),
+            directions = listOf("Direction 1", "Direction 2"),
+            tags = listOf("tag1", "tag2"),
+            updatedAtRemotely = LocalDateTime.now(),
+            updatedAtLocally = LocalDateTime.now(),
+        )
+    RecipesAppTheme {
+        RecipeDetails(recipe = recipe, modifier = Modifier.padding(4.dp))
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun RecipeDetailsBottomBarPreview() {
+    val recipe =
+        Recipe(
+            id = 1,
+            title = "Recipe 1",
+            updatedAtLocally = LocalDateTime.now(),
+            updatedAtRemotely = LocalDateTime.now(),
+        )
+    RecipesAppTheme {
+        RecipeDetailsBottomBar(recipe = recipe)
     }
 }

@@ -18,6 +18,7 @@ okhttp = "5.3.1"
 retrofit-kotlinx-serialization-converter = "1.0.0" # Version for the converter
 nav = "2.9.6"
 room = "2.8.3"
+media3CommonKtx = "1.9.0"
 
 
 [libraries]
@@ -47,6 +48,7 @@ hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", v
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
