@@ -10,7 +10,7 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes")
     fun getRecipesFlow(): Flow<List<DbRecipe>>
 
-    @Query(value = "SELECT * FROM recipes WHERE title LIKE '%' || :query || '%'")
+    @Query(value = "SELECT * FROM recipes WHERE title LIKE '%' || :query || '%' OR ingredients LIKE '%' || :query || '%'")
     fun searchRecipes(query: String): Flow<List<DbRecipe>>
 
     @Query("SELECT * FROM recipes")
