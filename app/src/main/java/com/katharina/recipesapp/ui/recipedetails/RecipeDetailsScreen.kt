@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomAppBar
@@ -85,7 +87,14 @@ fun RecipeDetails(
     recipe: Recipe,
     modifier: Modifier,
 ) {
-    Column(modifier = modifier.then(Modifier.background(color = MaterialTheme.colorScheme.background))) {
+    Column(
+        modifier =
+            modifier.then(
+                Modifier
+                    .background(color = MaterialTheme.colorScheme.background)
+                    .verticalScroll(rememberScrollState()),
+            ),
+    ) {
         Column(
             modifier = Modifier.padding(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
