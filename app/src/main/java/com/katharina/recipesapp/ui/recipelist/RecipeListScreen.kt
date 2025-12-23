@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +27,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,7 +47,13 @@ fun RecipeListScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { RecipeListTopBar() },
-        bottomBar = { RecipeListBottomBar() },
+        bottomBar = {
+            RecipeListBottomBar(
+                query = viewModel.query,
+                onQueryChange = { viewModel.query = it },
+                onSearch = { viewModel.searchRecipes() },
+            )
+        },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
     ) { innerPadding ->
         Column(
@@ -104,20 +109,30 @@ fun RecipeListTopBar() {
 }
 
 @Composable
-fun RecipeListBottomBar() {
-    var filter by remember { mutableStateOf("") }
-
+fun RecipeListBottomBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = filter,
-            onValueChange = { filter = it },
+            value = query,
+            onValueChange = { onQueryChange(it) },
             label = { Text("Filter") },
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Filter") },
+            trailingIcon = {
+                FilledTonalIconButton(onClick = onSearch) {
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = "Search",
+                    )
+                }
+            },
         )
     }
 }
@@ -169,7 +184,7 @@ fun RecipeListTopBarPreview() {
 @Composable
 fun RecipeListPreview() {
     val recipes =
-        listOf<Recipe>(
+        listOf(
             Recipe(
                 id = 1,
                 title = "Recipe 1",
@@ -196,6 +211,10 @@ fun RecipeListPreview() {
 @Composable
 fun RecipeListBottomBarPreview() {
     RecipesAppTheme {
-        RecipeListBottomBar()
+        RecipeListBottomBar(
+            query = "lentil",
+            onQueryChange = {},
+            onSearch = {},
+        )
     }
 }

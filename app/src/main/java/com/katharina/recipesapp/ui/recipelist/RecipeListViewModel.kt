@@ -29,6 +29,9 @@ class RecipeListViewModel
 
         var message by mutableStateOf("")
             private set
+        var query by mutableStateOf("")
+            public set
+
         private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
         val uiState: StateFlow<UiState> = _uiState
 
@@ -51,6 +54,18 @@ class RecipeListViewModel
         fun updateRecipes() {
             viewModelScope.launch {
                 message = recipeRepository.updateRecipes()
+            }
+        }
+
+        fun searchRecipes() {
+            viewModelScope.launch {
+                try {
+                    recipeRepository.searchRecipes(query).collect { recipes ->
+                        _uiState.value = UiState.Success(recipes)
+                    }
+                } catch (exception: Error) {
+                    println(exception.message)
+                }
             }
         }
     }

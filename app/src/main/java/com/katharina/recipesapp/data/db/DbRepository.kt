@@ -9,9 +9,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface DbRepository {
-    suspend fun getRecipes(): Flow<List<Recipe>>
+    suspend fun getRecipesFlow(): Flow<List<Recipe>>
 
-    suspend fun getRecipe(recipeId: Int): Flow<Recipe?>
+    suspend fun searchRecipes(query: String): Flow<List<Recipe>>
+
+    suspend fun getAllRecipes(): List<Recipe>
+
+    suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?>
 
     suspend fun updateRecipe(recipe: Recipe)
 }
@@ -22,9 +26,14 @@ class DefaultDbRepository
     constructor(
         private val recipeDao: RecipeDao,
     ) : DbRepository {
-        override suspend fun getRecipes(): Flow<List<Recipe>> = recipeDao.getRecipes().map { it.map { it.toRecipe() } }
+        override suspend fun getRecipesFlow(): Flow<List<Recipe>> = recipeDao.getRecipesFlow().map { list -> list.map { it.toRecipe() } }
 
-        override suspend fun getRecipe(recipeId: Int): Flow<Recipe?> = recipeDao.getRecipe(recipeId).map { it?.toRecipe() }
+        override suspend fun searchRecipes(query: String): Flow<List<Recipe>> =
+            recipeDao.searchRecipes(query).map { list -> list.map { it.toRecipe() } }
+
+        override suspend fun getAllRecipes(): List<Recipe> = recipeDao.getAllRecipes().map { it.toRecipe() }
+
+        override suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?> = recipeDao.getRecipeFlow(recipeId).map { it?.toRecipe() }
 
         override suspend fun updateRecipe(recipe: Recipe) {
             withContext(Dispatchers.IO) {

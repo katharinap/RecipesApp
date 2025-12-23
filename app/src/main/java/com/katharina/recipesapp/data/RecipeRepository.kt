@@ -13,6 +13,8 @@ interface RecipeRepository {
 
     suspend fun getRecipeById(recipeId: Int): Flow<Recipe?>
 
+    suspend fun searchRecipes(query: String): Flow<List<Recipe>>
+
     suspend fun updateRecipes(): String
 
     suspend fun updateRecipe(recipeId: Int): String
@@ -25,17 +27,28 @@ class DefaultRecipesRepository
         private val dbRepository: DbRepository,
         private val networkRepository: NetworkRepository,
     ) : RecipeRepository {
-        override suspend fun getAllRecipes(): Flow<List<Recipe>> = dbRepository.getRecipes()
+        override suspend fun getAllRecipes(): Flow<List<Recipe>> = dbRepository.getRecipesFlow()
 
-        override suspend fun getRecipeById(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipe(recipeId)
+        override suspend fun searchRecipes(query: String): Flow<List<Recipe>> = dbRepository.searchRecipes(query)
+
+        override suspend fun getRecipeById(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipeFlow(recipeId)
 
         override suspend fun updateRecipes(): String {
             val response = networkRepository.getRecipes()
             if (response is NetworkResult.Success) {
-                response.data.forEach { recipe ->
-                    dbRepository.updateRecipe(recipe)
+                var updateCount = 0
+
+                val localRecipes = dbRepository.getAllRecipes().map { it.id to it.updatedAtLocally }.toMap()
+
+                response.data.forEach { recipeRemote ->
+                    val needsUpdate = localRecipes.get(recipeRemote.id)?.isBefore(recipeRemote.updatedAtRemotely) ?: true
+                    if (needsUpdate) {
+                        // dbRepository.updateRecipe(recipeRemote)
+                        updateRecipe(recipeRemote.id)
+                        updateCount++
+                    }
                 }
-                return "Successfully fetched ${response.data.size} recipes"
+                return "Successfully fetched $updateCount recipes"
             } else {
                 return (response as NetworkResult.Error).exception.message ?: "Unknown error"
             }
