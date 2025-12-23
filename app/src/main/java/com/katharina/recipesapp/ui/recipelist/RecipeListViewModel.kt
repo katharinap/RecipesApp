@@ -43,7 +43,7 @@ class RecipeListViewModel
             viewModelScope.launch {
                 try {
                     recipeRepository.getAllRecipes().collect { recipes ->
-                        _uiState.value = UiState.Success(recipes)
+                        _uiState.value = UiState.Success(recipes.shuffled())
                     }
                 } catch (exception: Error) {
                     println(exception.message)
@@ -61,7 +61,7 @@ class RecipeListViewModel
             viewModelScope.launch {
                 try {
                     recipeRepository.searchRecipes(query).collect { recipes ->
-                        _uiState.value = UiState.Success(recipes)
+                        _uiState.value = UiState.Success(recipes.shuffled())
                     }
                 } catch (exception: Error) {
                     println(exception.message)
