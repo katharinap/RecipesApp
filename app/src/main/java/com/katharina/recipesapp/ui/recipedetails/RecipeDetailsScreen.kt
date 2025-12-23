@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -32,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
@@ -84,20 +86,27 @@ fun RecipeDetails(
     modifier: Modifier,
 ) {
     Column(modifier = modifier.then(Modifier.background(color = MaterialTheme.colorScheme.background))) {
-        Row(horizontalArrangement = Arrangement.Center) {
+        Column(
+            modifier = Modifier.padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
             if (recipe.imageUrl == null) {
                 Image(
                     painter = painterResource(R.drawable.recipe_default_350),
                     contentDescription = "Default Recipe Image",
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.size(350.dp),
+                    alignment = Alignment.Center,
                 )
             } else {
                 recipe.getRemoteImageUrl()?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
+                    AsyncImage(
+                        model = it,
+                        contentDescription = "Recipe Image",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(350.dp),
+                        alignment = Alignment.Center,
                     )
                 }
             }
