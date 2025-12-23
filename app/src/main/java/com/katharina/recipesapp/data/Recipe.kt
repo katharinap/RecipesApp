@@ -1,5 +1,6 @@
 package com.katharina.recipesapp.data
 
+import com.katharina.recipesapp.data.network.Constants
 import java.time.LocalDateTime
 
 data class Recipe(
@@ -8,6 +9,7 @@ data class Recipe(
     val ingredients: List<String> = emptyList(),
     val directions: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
+    val imageUrl: String? = null,
     val updatedAtRemotely: LocalDateTime? = null,
     val updatedAtLocally: LocalDateTime? = null,
 ) {
@@ -15,5 +17,13 @@ data class Recipe(
         if (updatedAtRemotely == null) return true
         if (updatedAtLocally == null) return true
         return updatedAtRemotely.isAfter(updatedAtLocally)
+    }
+
+    fun getRemoteImageUrl(): String? {
+        if (imageUrl == null) {
+            return null
+        } else {
+            return Constants.IMAGE_BASE_URL + imageUrl
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.katharina.recipesapp.ui.recipedetails
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -81,6 +84,25 @@ fun RecipeDetails(
     modifier: Modifier,
 ) {
     Column(modifier = modifier.then(Modifier.background(color = MaterialTheme.colorScheme.background))) {
+        Row(horizontalArrangement = Arrangement.Center) {
+            if (recipe.imageUrl == null) {
+                Image(
+                    painter = painterResource(R.drawable.recipe_default_350),
+                    contentDescription = "Default Recipe Image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            } else {
+                recipe.getRemoteImageUrl()?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
+        }
+
         Row(modifier = Modifier.padding(4.dp)) {
             Icon(
                 painter = painterResource(R.drawable.outline_tag_24),

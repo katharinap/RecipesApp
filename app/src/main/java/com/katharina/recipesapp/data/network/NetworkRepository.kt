@@ -70,6 +70,7 @@ class DefaultNetworkRepository
                 ingredients = ingredients,
                 directions = directions,
                 tags = tags,
+                imageUrl = picturePath,
                 updatedAtRemotely =
                     LocalDateTime.ofInstant(
                         java.time.Instant.parse(updatedAt),

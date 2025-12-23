@@ -11,6 +11,7 @@ data class DbRecipe(
     val tags: List<String>,
     val ingredients: List<String>,
     val directions: List<String>,
+    val imageUrl: String?,
     val updatedAtRemotely: LocalDateTime?,
     val updatedAtLocally: LocalDateTime?,
 )

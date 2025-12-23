@@ -39,6 +39,7 @@ class DefaultDbRepository
                 ingredients = ingredients,
                 directions = directions,
                 tags = tags,
+                imageUrl = imageUrl,
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
             )
@@ -50,6 +51,7 @@ class DefaultDbRepository
                 ingredients = ingredients,
                 directions = directions,
                 tags = tags,
+                imageUrl = imageUrl,
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
             )
