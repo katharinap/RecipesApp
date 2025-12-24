@@ -32,6 +32,9 @@ class RecipeListViewModel
         var query by mutableStateOf("")
             public set
 
+        var tagList by mutableStateOf(emptyList<String>())
+            private set
+
         private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
         val uiState: StateFlow<UiState> = _uiState
 
@@ -44,6 +47,7 @@ class RecipeListViewModel
                 try {
                     recipeRepository.getAllRecipes().collect { recipes ->
                         _uiState.value = UiState.Success(recipes.shuffled())
+                        tagList = recipes.flatMap { it.tags }.distinct().sorted()
                     }
                 } catch (exception: Error) {
                     println(exception.message)
@@ -53,7 +57,8 @@ class RecipeListViewModel
 
         fun updateRecipes() {
             viewModelScope.launch {
-                message = recipeRepository.updateRecipes()
+                val force = true
+                message = recipeRepository.updateRecipes(force)
             }
         }
 

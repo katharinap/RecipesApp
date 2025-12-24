@@ -15,7 +15,7 @@ interface RecipeRepository {
 
     suspend fun searchRecipes(query: String): Flow<List<Recipe>>
 
-    suspend fun updateRecipes(): String
+    suspend fun updateRecipes(force: Boolean): String
 
     suspend fun updateRecipe(recipeId: Int): String
 }
@@ -33,15 +33,16 @@ class DefaultRecipesRepository
 
         override suspend fun getRecipeById(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipeFlow(recipeId)
 
-        override suspend fun updateRecipes(): String {
+        override suspend fun updateRecipes(force: Boolean): String {
             val response = networkRepository.getRecipes()
+
             if (response is NetworkResult.Success) {
                 var updateCount = 0
 
                 val localRecipes = dbRepository.getAllRecipes().map { it.id to it.updatedAtLocally }.toMap()
 
                 response.data.forEach { recipeRemote ->
-                    val needsUpdate = localRecipes.get(recipeRemote.id)?.isBefore(recipeRemote.updatedAtRemotely) ?: true
+                    val needsUpdate = force || localRecipes.get(recipeRemote.id)?.isBefore(recipeRemote.updatedAtRemotely) ?: true
                     if (needsUpdate) {
                         // dbRepository.updateRecipe(recipeRemote)
                         updateRecipe(recipeRemote.id)
