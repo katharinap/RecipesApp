@@ -1,15 +1,19 @@
 package com.katharina.recipesapp.ui.recipelist
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Refresh
@@ -27,12 +31,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
@@ -149,7 +157,10 @@ fun RecipeList(
     recipes: List<Recipe>,
     onRecipeSelected: (Int) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background)) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         items(items = recipes) { recipe ->
             RecipeListItem(recipe = recipe, onRecipeSelected = onRecipeSelected)
         }
@@ -159,15 +170,33 @@ fun RecipeList(
 @Composable
 fun RecipeListItem(
     recipe: Recipe,
-    modifier: Modifier = Modifier,
     onRecipeSelected: (Int) -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (recipe.imageUrl == null) {
+            Image(
+                painter = painterResource(R.drawable.recipe_default_350),
+                contentDescription = "Default Recipe Image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)),
+                alignment = Alignment.Center,
+            )
+        } else {
+            recipe.getRemoteImageUrl()?.let {
+                AsyncImage(
+                    model = it,
+                    contentDescription = "Recipe Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)),
+                    alignment = Alignment.Center,
+                )
+            }
+        }
         Text(
             text = recipe.title,
-            modifier = Modifier.clickable { onRecipeSelected(recipe.id) },
+            modifier = Modifier.padding(4.dp).clickable { onRecipeSelected(recipe.id) },
             color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall,
         )
     }
 }

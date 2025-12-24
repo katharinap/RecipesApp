@@ -64,9 +64,9 @@ fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
                 topBar = {
                     RecipeDetailsTopBar(recipe = recipe)
                 },
-                bottomBar = {
-                    RecipeDetailsBottomBar(recipe = recipe)
-                },
+//                bottomBar = {
+//                    RecipeDetailsBottomBar(recipe = recipe)
+//                },
                 floatingActionButton = {
                     RecipeDetailsRefreshButton(recipe = recipe, onRefresh = viewModel::updateRecipe)
                 },
@@ -96,7 +96,7 @@ fun RecipeDetails(
             ),
     ) {
         Column(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(4.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -104,8 +104,8 @@ fun RecipeDetails(
                 Image(
                     painter = painterResource(R.drawable.recipe_default_350),
                     contentDescription = "Default Recipe Image",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(350.dp),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(300.dp),
                     alignment = Alignment.Center,
                 )
             } else {
@@ -113,45 +113,56 @@ fun RecipeDetails(
                     AsyncImage(
                         model = it,
                         contentDescription = "Recipe Image",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(350.dp),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(300.dp),
                         alignment = Alignment.Center,
                     )
                 }
             }
         }
 
-        Row(modifier = Modifier.padding(4.dp)) {
-            Icon(
-                painter = painterResource(R.drawable.outline_tag_24),
-                contentDescription = "Tags",
-                tint = MaterialTheme.colorScheme.tertiary,
-            )
-            recipe.tags.forEach { tag ->
-                Box(
-                    modifier =
-                        Modifier
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(percent = 25))
-                            .background(color = MaterialTheme.colorScheme.tertiaryContainer),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = tag,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.padding(4.dp),
-                    )
+        if (recipe.tags.isNotEmpty()) {
+            Row(modifier = Modifier.padding(4.dp)) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_tag_24),
+                    contentDescription = "Tags",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                )
+                recipe.tags.forEach { tag ->
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(percent = 25))
+                                .background(color = MaterialTheme.colorScheme.tertiaryContainer),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = tag,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(4.dp),
+                        )
+                    }
                 }
             }
         }
 
-        Text(text = "Ingredients", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(
+            text = "Ingredients",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
         recipe.ingredients.forEach { ingredient ->
             Text(text = "- $ingredient", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
         }
 
-        Text(text = "Directions", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(
+            text = "Directions",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 8.dp),
+        )
         recipe.directions.forEach { direction ->
             Text(text = direction, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
         }
@@ -213,7 +224,9 @@ fun RecipeDetailsRefreshButton(
     recipe: Recipe,
     onRefresh: () -> Unit,
 ) {
-    if (recipe.needsUpdate()) {
+    val show = true // recipe.needsUpdate()
+
+    if (show) {
         FloatingActionButton(
             onClick = { onRefresh() },
         ) {
