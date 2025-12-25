@@ -68,7 +68,10 @@ fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
 //                    RecipeDetailsBottomBar(recipe = recipe)
 //                },
                 floatingActionButton = {
-                    RecipeDetailsRefreshButton(recipe = recipe, onRefresh = viewModel::updateRecipe)
+                    RecipeDetailsRefreshButton(
+                        recipe = recipe,
+                        onRefresh = viewModel::updateRecipe,
+                    )
                 },
             ) { innerPadding ->
 
@@ -91,7 +94,7 @@ fun RecipeDetails(
         modifier =
             modifier.then(
                 Modifier
-                    .background(color = MaterialTheme.colorScheme.background)
+                    .background(color = MaterialTheme.colorScheme.surface)
                     .verticalScroll(rememberScrollState()),
             ),
     ) {
