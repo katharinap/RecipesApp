@@ -32,7 +32,10 @@ class RecipeListViewModel
         var query by mutableStateOf("")
             public set
 
-        var tagList by mutableStateOf(emptyList<String>())
+        var taglist by mutableStateOf(emptyList<String>())
+            private set
+
+        var recipes by mutableStateOf(emptyList<Recipe>())
             private set
 
         private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -45,9 +48,11 @@ class RecipeListViewModel
         fun loadRecipes() {
             viewModelScope.launch {
                 try {
-                    recipeRepository.getAllRecipes().collect { recipes ->
-                        _uiState.value = UiState.Success(recipes.shuffled())
-                        tagList = recipes.flatMap { it.tags }.distinct().sorted()
+                    recipeRepository.getAllRecipes().collect { result ->
+                        recipes = result.shuffled()
+                        taglist = listOf("-") + result.flatMap { it.tags }.distinct().sorted()
+                        _uiState.value =
+                            UiState.Success(recipes = recipes)
                     }
                 } catch (exception: Error) {
                     println(exception.message)
@@ -57,16 +62,40 @@ class RecipeListViewModel
 
         fun updateRecipes() {
             viewModelScope.launch {
-                val force = true
+                val force = false
                 message = recipeRepository.updateRecipes(force)
             }
         }
 
-        fun searchRecipes() {
+        fun searchRecipes(filter: String) {
+            query = filter
             viewModelScope.launch {
                 try {
-                    recipeRepository.searchRecipes(query).collect { recipes ->
-                        _uiState.value = UiState.Success(recipes.shuffled())
+                    if (query.isEmpty()) {
+                        _uiState.value = UiState.Success(recipes = recipes)
+                        return@launch
+                    } else {
+                        recipeRepository.searchRecipes(query).collect { result ->
+                            _uiState.value = UiState.Success(result.shuffled())
+                        }
+                    }
+                } catch (exception: Error) {
+                    println(exception.message)
+                }
+            }
+        }
+
+        fun loadRecipesWithTag(tag: String) {
+            query = ""
+            viewModelScope.launch {
+                try {
+                    if (tag.equals("-")) {
+                        _uiState.value = UiState.Success(recipes = recipes)
+                        return@launch
+                    } else {
+                        recipeRepository.getRecipesWithTag(tag).collect { result ->
+                            _uiState.value = UiState.Success(result.shuffled())
+                        }
                     }
                 } catch (exception: Error) {
                     println(exception.message)

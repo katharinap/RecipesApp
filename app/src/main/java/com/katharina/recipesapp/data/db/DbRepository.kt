@@ -13,6 +13,8 @@ interface DbRepository {
 
     suspend fun searchRecipes(query: String): Flow<List<Recipe>>
 
+    suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>>
+
     suspend fun getAllRecipes(): List<Recipe>
 
     suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?>
@@ -30,6 +32,13 @@ class DefaultDbRepository
 
         override suspend fun searchRecipes(query: String): Flow<List<Recipe>> =
             recipeDao.searchRecipes(query).map { list -> list.map { it.toRecipe() } }
+
+        override suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>> =
+            recipeDao.getRecipesWithTag(tag).map { list ->
+                list.map {
+                    it.toRecipe()
+                }
+            }
 
         override suspend fun getAllRecipes(): List<Recipe> = recipeDao.getAllRecipes().map { it.toRecipe() }
 

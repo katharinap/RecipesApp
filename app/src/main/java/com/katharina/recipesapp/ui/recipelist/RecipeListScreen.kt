@@ -15,14 +15,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,6 +35,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,12 +61,16 @@ fun RecipeListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { RecipeListTopBar() },
+        topBar = {
+            RecipeListTopBar(
+                taglist = viewModel.taglist,
+                onTagSelected = viewModel::loadRecipesWithTag,
+            )
+        },
         bottomBar = {
             RecipeListBottomBar(
                 query = viewModel.query,
-                onQueryChange = { viewModel.query = it },
-                onSearch = { viewModel.searchRecipes() },
+                onSearch = { viewModel.searchRecipes(it) },
             )
         },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
@@ -91,7 +102,12 @@ fun RecipeListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeListTopBar() {
+fun RecipeListTopBar(
+    taglist: List<String>,
+    onTagSelected: (String) -> Unit,
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     TopAppBar(
         colors =
             topAppBarColors(
@@ -99,18 +115,44 @@ fun RecipeListTopBar() {
                 titleContentColor = MaterialTheme.colorScheme.primary,
             ),
         title = {
-            Row {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_cookie_24),
-                    contentDescription = "Cookie",
-                )
-                Text(
-                    text = "My Recipes",
-                    modifier =
-                        Modifier.padding(
-                            start = 10.dp,
-                        ),
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_cookie_24),
+                        contentDescription = "Cookie",
+                    )
+                    Text(
+                        text = "My Recipes",
+                        modifier =
+                            Modifier.padding(
+                                start = 10.dp,
+                            ),
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                ) {
+                    taglist.forEach { tag ->
+                        DropdownMenuItem(
+                            text = { Text(tag) },
+                            onClick = {
+                                menuExpanded = false
+                                onTagSelected(tag)
+                            },
+                        )
+                    }
+                }
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                Icon(Icons.Default.Menu, "Tags", tint = MaterialTheme.colorScheme.primary)
             }
         },
     )
@@ -119,8 +161,8 @@ fun RecipeListTopBar() {
 @Composable
 fun RecipeListBottomBar(
     query: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
+//    onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
 ) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -129,15 +171,15 @@ fun RecipeListBottomBar(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = query,
-            onValueChange = { onQueryChange(it) },
+            onValueChange = { onSearch(it) },
             label = { Text("Filter") },
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Filter") },
             trailingIcon = {
-                FilledTonalIconButton(onClick = onSearch) {
+                FilledTonalIconButton(onClick = { onSearch("") }) {
                     Icon(
-                        Icons.Default.Done,
-                        contentDescription = "Search",
+                        Icons.Default.Clear,
+                        contentDescription = "Clear",
                     )
                 }
             },
@@ -158,7 +200,10 @@ fun RecipeList(
     onRecipeSelected: (Int) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(items = recipes) { recipe ->
@@ -178,7 +223,10 @@ fun RecipeListItem(
                 painter = painterResource(R.drawable.recipe_default_350),
                 contentDescription = "Default Recipe Image",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)),
+                modifier =
+                    Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(16.dp)),
                 alignment = Alignment.Center,
             )
         } else {
@@ -187,14 +235,20 @@ fun RecipeListItem(
                     model = it,
                     contentDescription = "Recipe Image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)),
+                    modifier =
+                        Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(16.dp)),
                     alignment = Alignment.Center,
                 )
             }
         }
         Text(
             text = recipe.title,
-            modifier = Modifier.padding(4.dp).clickable { onRecipeSelected(recipe.id) },
+            modifier =
+                Modifier
+                    .padding(4.dp)
+                    .clickable { onRecipeSelected(recipe.id) },
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.headlineSmall,
         )
@@ -205,7 +259,10 @@ fun RecipeListItem(
 @Composable
 fun RecipeListTopBarPreview() {
     RecipesAppTheme {
-        RecipeListTopBar()
+        RecipeListTopBar(
+            taglist = listOf("tag1", "tag2", "tag3"),
+            onTagSelected = {},
+        )
     }
 }
 
@@ -242,7 +299,6 @@ fun RecipeListBottomBarPreview() {
     RecipesAppTheme {
         RecipeListBottomBar(
             query = "lentil",
-            onQueryChange = {},
             onSearch = {},
         )
     }

@@ -15,6 +15,8 @@ interface RecipeRepository {
 
     suspend fun searchRecipes(query: String): Flow<List<Recipe>>
 
+    suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>>
+
     suspend fun updateRecipes(force: Boolean): String
 
     suspend fun updateRecipe(recipeId: Int): String
@@ -30,6 +32,8 @@ class DefaultRecipesRepository
         override suspend fun getAllRecipes(): Flow<List<Recipe>> = dbRepository.getRecipesFlow()
 
         override suspend fun searchRecipes(query: String): Flow<List<Recipe>> = dbRepository.searchRecipes(query)
+
+        override suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>> = dbRepository.getRecipesWithTag(tag)
 
         override suspend fun getRecipeById(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipeFlow(recipeId)
 
