@@ -33,15 +33,31 @@ fun AppNavHost(
                 onRecipeSelected = { recipeId ->
                     navController.navigate(AppDestination.RecipeDetails(recipeId))
                 },
+                onGoToShoppingList = {
+                    navController.navigate(AppDestination.ShoppingList)
+                },
             )
         }
 
         composable<AppDestination.RecipeDetails> { navBackStackEntry ->
-            RecipeDetailsScreen(viewModel = hiltViewModel<RecipeDetailsViewModel>())
+            RecipeDetailsScreen(
+                viewModel = hiltViewModel<RecipeDetailsViewModel>(),
+                onGoToShoppingList = {
+                    navController.navigate(AppDestination.ShoppingList)
+                },
+                onGoToRecipeList = {
+                    navController.navigate(AppDestination.RecipeList)
+                },
+            )
         }
 
         composable<AppDestination.ShoppingList> { navBackStackEntry ->
-            ShoppingListScreen(viewModel = hiltViewModel<ShoppingListViewModel>())
+            ShoppingListScreen(
+                viewModel = hiltViewModel<ShoppingListViewModel>(),
+                onGoToRecipeList = {
+                    navController.navigate(AppDestination.RecipeList)
+                },
+            )
         }
 
         composable<AppDestination.Login> { navBackStackEntry ->

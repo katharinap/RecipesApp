@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
@@ -57,20 +56,22 @@ import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 fun RecipeListScreen(
     viewModel: RecipeListViewModel,
     onRecipeSelected: (Int) -> Unit,
+    onGoToShoppingList: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             RecipeListTopBar(
-                taglist = viewModel.taglist,
-                onTagSelected = viewModel::loadRecipesWithTag,
+                onGoToShoppingList = onGoToShoppingList,
             )
         },
         bottomBar = {
             RecipeListBottomBar(
                 query = viewModel.query,
                 onSearch = { viewModel.searchRecipes(it) },
+                taglist = viewModel.taglist,
+                onTagSelected = viewModel::loadRecipesWithTag,
             )
         },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
@@ -102,12 +103,7 @@ fun RecipeListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeListTopBar(
-    taglist: List<String>,
-    onTagSelected: (String) -> Unit,
-) {
-    var menuExpanded by remember { mutableStateOf(false) }
-
+fun RecipeListTopBar(onGoToShoppingList: () -> Unit) {
     TopAppBar(
         colors =
             topAppBarColors(
@@ -117,7 +113,7 @@ fun RecipeListTopBar(
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row {
@@ -134,25 +130,11 @@ fun RecipeListTopBar(
                     )
                 }
 
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                ) {
-                    taglist.forEach { tag ->
-                        DropdownMenuItem(
-                            text = { Text(tag) },
-                            onClick = {
-                                menuExpanded = false
-                                onTagSelected(tag)
-                            },
-                        )
-                    }
-                }
-            }
-        },
-        navigationIcon = {
-            IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                Icon(Icons.Default.Menu, "Tags", tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    painter = painterResource(R.drawable.baseline_list_alt_24),
+                    contentDescription = "List",
+                    modifier = Modifier.clickable { onGoToShoppingList() }.padding(end = 10.dp),
+                )
             }
         },
     )
@@ -161,29 +143,56 @@ fun RecipeListTopBar(
 @Composable
 fun RecipeListBottomBar(
     query: String,
-//    onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
+    taglist: List<String> = listOf(),
+    onTagSelected: (String) -> Unit = {},
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = query,
-            onValueChange = { onSearch(it) },
-            label = { Text("Filter") },
-            singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Filter") },
-            trailingIcon = {
-                FilledTonalIconButton(onClick = { onSearch("") }) {
-                    Icon(
-                        Icons.Default.Clear,
-                        contentDescription = "Clear",
-                    )
-                }
-            },
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_tag_24),
+                    contentDescription = "Tags",
+                )
+            }
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = query,
+                onValueChange = { onSearch(it) },
+                label = { Text("Filter") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Filter") },
+                trailingIcon = {
+                    FilledTonalIconButton(onClick = { onSearch("") }) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "Clear",
+                        )
+                    }
+                },
+            )
+        }
+
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false },
+        ) {
+            taglist.forEach { tag ->
+                DropdownMenuItem(
+                    text = { Text(tag) },
+                    onClick = {
+                        menuExpanded = false
+                        onTagSelected(tag)
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -260,8 +269,7 @@ fun RecipeListItem(
 fun RecipeListTopBarPreview() {
     RecipesAppTheme {
         RecipeListTopBar(
-            taglist = listOf("tag1", "tag2", "tag3"),
-            onTagSelected = {},
+            onGoToShoppingList = {},
         )
     }
 }

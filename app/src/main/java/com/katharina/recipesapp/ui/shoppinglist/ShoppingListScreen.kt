@@ -2,6 +2,8 @@ package com.katharina.recipesapp.ui.shoppinglist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,23 +28,29 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.ShoppingListItem
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 
 @Composable
-fun ShoppingListScreen(viewModel: ShoppingListViewModel) {
+fun ShoppingListScreen(
+    viewModel: ShoppingListViewModel,
+    onGoToRecipeList: () -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ShoppingListTopBar() },
+        topBar = { ShoppingListTopBar(onGoToRecipeList = onGoToRecipeList) },
         bottomBar = {
             ShoppingListBottomBar(
                 nextItem = viewModel.nextItem,
@@ -145,9 +153,35 @@ fun ShoppingList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingListTopBar() {
+fun ShoppingListTopBar(onGoToRecipeList: () -> Unit) {
     TopAppBar(
-        title = { Text("Shopping List") },
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_list_alt_24),
+                        contentDescription = "List",
+                    )
+                    Text(
+                        "Shopping List",
+                        modifier =
+                            Modifier.padding(
+                                start = 10.dp,
+                            ),
+                    )
+                }
+                Icon(
+                    painter = painterResource(R.drawable.baseline_cookie_24),
+                    contentDescription = "Cookie",
+                    modifier =
+                        Modifier.clickable { onGoToRecipeList() }.padding(end = 10.dp),
+                )
+            }
+        },
         colors =
             topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -160,7 +194,7 @@ fun ShoppingListTopBar() {
 @Composable
 fun ShoppingListTopBarPreview() {
     RecipesAppTheme {
-        ShoppingListTopBar()
+        ShoppingListTopBar(onGoToRecipeList = {})
     }
 }
 

@@ -2,6 +2,7 @@ package com.katharina.recipesapp.ui.recipedetails
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
+fun RecipeDetailsScreen(
+    viewModel: RecipeDetailsViewModel,
+    onGoToShoppingList: () -> Unit,
+    onGoToRecipeList: () -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     when (uiState) {
@@ -62,7 +67,7 @@ fun RecipeDetailsScreen(viewModel: RecipeDetailsViewModel) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
-                    RecipeDetailsTopBar(recipe = recipe)
+                    RecipeDetailsTopBar(recipe = recipe, onGoToShoppingList = onGoToShoppingList, onGoToRecipeList = onGoToRecipeList)
                 },
 //                bottomBar = {
 //                    RecipeDetailsBottomBar(recipe = recipe)
@@ -174,20 +179,36 @@ fun RecipeDetails(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeDetailsTopBar(recipe: Recipe) {
+fun RecipeDetailsTopBar(
+    recipe: Recipe,
+    onGoToShoppingList: () -> Unit,
+    onGoToRecipeList: () -> Unit,
+) {
     TopAppBar(
         title = {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_cookie_24),
+                        contentDescription = "Cookie",
+                        modifier = Modifier.clickable { onGoToRecipeList() },
+                    )
+                    Text(
+                        text = recipe.title,
+                        modifier =
+                            Modifier.padding(
+                                start = 10.dp,
+                            ),
+                    )
+                }
                 Icon(
-                    painter = painterResource(R.drawable.baseline_cookie_24),
-                    contentDescription = "Cookie",
-                )
-                Text(
-                    text = recipe.title,
-                    modifier =
-                        Modifier.padding(
-                            start = 10.dp,
-                        ),
+                    painter = painterResource(R.drawable.baseline_list_alt_24),
+                    contentDescription = "List",
+                    modifier = Modifier.clickable { onGoToShoppingList() }.padding(end = 10.dp),
                 )
             }
         },
@@ -247,7 +268,11 @@ fun RecipeDetailsTopBarPreview() {
             title = "Recipe 1",
         )
     RecipesAppTheme {
-        RecipeDetailsTopBar(recipe = recipe)
+        RecipeDetailsTopBar(
+            recipe = recipe,
+            onGoToShoppingList = {},
+            onGoToRecipeList = {},
+        )
     }
 }
 
