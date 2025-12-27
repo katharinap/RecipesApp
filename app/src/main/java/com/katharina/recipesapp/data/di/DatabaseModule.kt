@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.katharina.recipesapp.data.db.RecipeDao
 import com.katharina.recipesapp.data.db.RecipeDatabase
+import com.katharina.recipesapp.data.db.ShoppingListDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +29,7 @@ object DatabaseModule {
 
     @Provides
     fun providesRecipeDao(database: RecipeDatabase): RecipeDao = database.recipeDao()
+
+    @Provides
+    fun providesShoppingListDao(database: RecipeDatabase): ShoppingListDao = database.shoppingListDao()
 }

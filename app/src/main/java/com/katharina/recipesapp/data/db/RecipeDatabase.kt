@@ -6,14 +6,17 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    entities = [DbRecipe::class],
+    entities = [DbRecipe::class, DbShoppingListItem::class],
     exportSchema = true,
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @TypeConverters(Converters::class)
 abstract class RecipeDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
+
+    abstract fun shoppingListDao(): ShoppingListDao
 }

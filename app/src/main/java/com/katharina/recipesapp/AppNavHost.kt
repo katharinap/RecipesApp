@@ -13,6 +13,8 @@ import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsScreen
 import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsViewModel
 import com.katharina.recipesapp.ui.recipelist.RecipeListScreen
 import com.katharina.recipesapp.ui.recipelist.RecipeListViewModel
+import com.katharina.recipesapp.ui.shoppinglist.ShoppingListScreen
+import com.katharina.recipesapp.ui.shoppinglist.ShoppingListViewModel
 
 @Composable
 fun AppNavHost(
@@ -36,6 +38,10 @@ fun AppNavHost(
 
         composable<AppDestination.RecipeDetails> { navBackStackEntry ->
             RecipeDetailsScreen(viewModel = hiltViewModel<RecipeDetailsViewModel>())
+        }
+
+        composable<AppDestination.ShoppingList> { navBackStackEntry ->
+            ShoppingListScreen(viewModel = hiltViewModel<ShoppingListViewModel>())
         }
 
         composable<AppDestination.Login> { navBackStackEntry ->

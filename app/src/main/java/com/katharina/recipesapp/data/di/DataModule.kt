@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.katharina.recipesapp.data.DefaultRecipesRepository
+import com.katharina.recipesapp.data.DefaultShoppingListRepository
 import com.katharina.recipesapp.data.RecipeRepository
+import com.katharina.recipesapp.data.ShoppingListRepository
 import com.katharina.recipesapp.data.credentials.Credentials
 import com.katharina.recipesapp.data.credentials.CredentialsSerializer
 import com.katharina.recipesapp.data.db.DbRepository
@@ -56,4 +58,12 @@ abstract class DbRepositoryModule {
     @Binds
     @Singleton
     abstract fun bindDbRepository(repository: DefaultDbRepository): DbRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class ShoppingListRepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindShoppingListRepository(repository: DefaultShoppingListRepository): ShoppingListRepository
 }

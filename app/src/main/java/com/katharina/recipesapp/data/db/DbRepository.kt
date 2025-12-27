@@ -1,6 +1,7 @@
 package com.katharina.recipesapp.data.db
 
 import com.katharina.recipesapp.data.Recipe
+import com.katharina.recipesapp.data.ShoppingListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,18 @@ interface DbRepository {
     suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?>
 
     suspend fun updateRecipe(recipe: Recipe)
+
+    suspend fun getShoppingListItemsFlow(): Flow<List<ShoppingListItem>>
+
+    suspend fun getShoppingListItemFlow(id: Int): Flow<ShoppingListItem?>
+
+    suspend fun updateShoppingListItem(item: ShoppingListItem)
+
+    suspend fun deleteShoppingListItem(id: Int)
+
+    suspend fun deleteCheckedShoppingListItems()
+
+    suspend fun deleteAllShoppingListItems()
 }
 
 @Singleton
@@ -27,6 +40,7 @@ class DefaultDbRepository
     @Inject
     constructor(
         private val recipeDao: RecipeDao,
+        private val shoppingListDao: ShoppingListDao,
     ) : DbRepository {
         override suspend fun getRecipesFlow(): Flow<List<Recipe>> = recipeDao.getRecipesFlow().map { list -> list.map { it.toRecipe() } }
 
@@ -49,6 +63,26 @@ class DefaultDbRepository
                 recipeDao.upsertRecipe(recipe.toDbRecipe())
             }
         }
+
+        override suspend fun getShoppingListItemsFlow(): Flow<List<ShoppingListItem>> =
+            shoppingListDao.getAll().map { list ->
+                list.map {
+                    it.toShoppingListItem()
+                }
+            }
+
+        override suspend fun getShoppingListItemFlow(id: Int): Flow<ShoppingListItem?> =
+            shoppingListDao.getById(id).map {
+                it?.toShoppingListItem()
+            }
+
+        override suspend fun updateShoppingListItem(item: ShoppingListItem) = shoppingListDao.createOrUpdate(item.toDbShoppingListItem())
+
+        override suspend fun deleteShoppingListItem(id: Int) = shoppingListDao.delete(id)
+
+        override suspend fun deleteCheckedShoppingListItems() = shoppingListDao.deleteChecked()
+
+        override suspend fun deleteAllShoppingListItems() = shoppingListDao.deleteAll()
 
         private fun DbRecipe.toRecipe(): Recipe =
             Recipe(
@@ -73,4 +107,10 @@ class DefaultDbRepository
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
             )
+
+        private fun DbShoppingListItem.toShoppingListItem(): ShoppingListItem =
+            ShoppingListItem(id = id, name = name, isChecked = isChecked)
+
+        private fun ShoppingListItem.toDbShoppingListItem(): DbShoppingListItem =
+            DbShoppingListItem(id = id, name = name, isChecked = isChecked)
     }

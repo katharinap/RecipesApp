@@ -1,0 +1,194 @@
+package com.katharina.recipesapp.ui.shoppinglist
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.katharina.recipesapp.data.ShoppingListItem
+import com.katharina.recipesapp.ui.LoadingScreen
+import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+
+@Composable
+fun ShoppingListScreen(viewModel: ShoppingListViewModel) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { ShoppingListTopBar() },
+        bottomBar = {
+            ShoppingListBottomBar(
+                nextItem = viewModel.nextItem,
+                onUpdateNextItem = viewModel::updateNextItem,
+                onAddItem = viewModel::addItem,
+            )
+        },
+        floatingActionButton = { ShoppingListFab(onClick = viewModel::deleteAllChecked) },
+    ) { innerPadding ->
+        val modifier = Modifier.padding(innerPadding)
+        when (uiState) {
+            is ShoppingListViewModel.UiState.Loading -> {
+                LoadingScreen(modifier = modifier)
+            }
+
+            is ShoppingListViewModel.UiState.Success -> {
+                val items = (uiState as ShoppingListViewModel.UiState.Success).items
+                ShoppingList(modifier = modifier, listItems = items, onItemClicked = viewModel::toggleCheckedState)
+            }
+        }
+    }
+}
+
+@Composable
+fun ShoppingListBottomBar(
+    nextItem: String,
+    onUpdateNextItem: (String) -> Unit,
+    onAddItem: () -> Unit,
+) {
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = nextItem,
+            onValueChange = {
+                onUpdateNextItem(it)
+            },
+            label = { Text("Item") },
+            singleLine = true,
+            leadingIcon = {
+                IconButton(
+                    onClick = {
+                        onUpdateNextItem("")
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear",
+                    )
+                }
+            },
+            trailingIcon = {
+                FilledTonalButton(
+                    onClick = {
+                        onAddItem()
+                        keyboardController?.hide()
+                    },
+                    shape = FloatingActionButtonDefaults.extendedFabShape,
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Add",
+                    )
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun ShoppingListFab(onClick: () -> Unit) {
+    FloatingActionButton(onClick = onClick) {
+        Icon(Icons.Default.Delete, contentDescription = "Delete Completed")
+    }
+}
+
+@Composable
+fun ShoppingList(
+    modifier: Modifier,
+    listItems: List<ShoppingListItem>,
+    onItemClicked: (ShoppingListItem) -> Unit = {},
+) {
+    LazyColumn(modifier = modifier.then(Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background))) {
+        items(items = listItems) { item ->
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None,
+                modifier = Modifier.clickable { onItemClicked(item) },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShoppingListTopBar() {
+    TopAppBar(
+        title = { Text("Shopping List") },
+        colors =
+            topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+            ),
+    )
+}
+
+@PreviewLightDark
+@Composable
+fun ShoppingListTopBarPreview() {
+    RecipesAppTheme {
+        ShoppingListTopBar()
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun ShoppingListPreview() {
+    val itemList =
+        listOf(
+            ShoppingListItem(name = "Item 1"),
+            ShoppingListItem(name = "Item 2", isChecked = true),
+            ShoppingListItem(name = "Item 3"),
+        )
+    RecipesAppTheme {
+        ShoppingList(
+            modifier = Modifier,
+            listItems = itemList,
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun ShoppingListBottomBarPreview() {
+    RecipesAppTheme {
+        ShoppingListBottomBar(
+            nextItem = "Item 1",
+            onUpdateNextItem = {},
+            onAddItem = {},
+        )
+    }
+}
