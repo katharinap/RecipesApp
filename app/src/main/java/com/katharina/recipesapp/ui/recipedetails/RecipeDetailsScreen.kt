@@ -14,12 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,7 +38,6 @@ import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun RecipeDetailsScreen(
@@ -69,19 +64,17 @@ fun RecipeDetailsScreen(
                 topBar = {
                     RecipeDetailsTopBar(recipe = recipe, onGoToShoppingList = onGoToShoppingList, onGoToRecipeList = onGoToRecipeList)
                 },
-//                bottomBar = {
-//                    RecipeDetailsBottomBar(recipe = recipe)
+//                floatingActionButton = {
+//                    AddIngredientsToShoppingListButton(
+//                        recipe = recipe,
+//                        onClick = viewModel::addIngredientsToShoppingList,
+//                    )
 //                },
-                floatingActionButton = {
-                    RecipeDetailsRefreshButton(
-                        recipe = recipe,
-                        onRefresh = viewModel::updateRecipe,
-                    )
-                },
             ) { innerPadding ->
 
                 RecipeDetails(
                     recipe = recipe,
+                    onAddIngredientsToShoppingList = viewModel::addIngredientsToShoppingList,
                     Modifier.padding(innerPadding),
                 )
             }
@@ -89,10 +82,26 @@ fun RecipeDetailsScreen(
     }
 }
 
+// @Composable
+// fun AddIngredientsToShoppingListButton(
+//    recipe: Recipe,
+//    onClick: (Recipe) -> Unit = {},
+// ) {
+//    FloatingActionButton(
+//        onClick = { onClick(recipe) },
+//    ) {
+//        Icon(
+//            painter = painterResource(R.drawable.baseline_list_alt_24),
+//            contentDescription = "Add Ingredients to Shopping List",
+//        )
+//    }
+// }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetails(
     recipe: Recipe,
+    onAddIngredientsToShoppingList: (Recipe) -> Unit = {},
     modifier: Modifier,
 ) {
     Column(
@@ -156,11 +165,22 @@ fun RecipeDetails(
             }
         }
 
-        Text(
-            text = "Ingredients",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "Ingredients",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Button(
+                onClick = { onAddIngredientsToShoppingList(recipe) },
+            ) {
+                Icon(painter = painterResource(R.drawable.outline_list_alt_add_24), contentDescription = "Add to Shopping List")
+            }
+        }
         recipe.ingredients.forEach { ingredient ->
             Text(text = "- $ingredient", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
         }
@@ -221,43 +241,21 @@ fun RecipeDetailsTopBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RecipeDetailsBottomBar(recipe: Recipe) {
-    BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-        windowInsets = BottomAppBarDefaults.windowInsets,
-    ) {
-        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
-        Column {
-            Text(
-                text = "Last updated remotely: ${recipe.updatedAtRemotely?.format(formatter)}",
-                style = MaterialTheme.typography.bodySmall,
-            )
-            Text(
-                text = "Last updated locally: ${recipe.updatedAtLocally?.format(formatter)}",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-    }
-}
-
-@Composable
-fun RecipeDetailsRefreshButton(
-    recipe: Recipe,
-    onRefresh: () -> Unit,
-) {
-    val show = true // recipe.needsUpdate()
-
-    if (show) {
-        FloatingActionButton(
-            onClick = { onRefresh() },
-        ) {
-            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
-        }
-    }
-}
+// @Composable
+// fun RecipeDetailsRefreshButton(
+//    recipe: Recipe,
+//    onRefresh: () -> Unit,
+// ) {
+//    val show = true // recipe.needsUpdate()
+//
+//    if (show) {
+//        FloatingActionButton(
+//            onClick = { onRefresh() },
+//        ) {
+//            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
+//        }
+//    }
+// }
 
 @PreviewLightDark
 @Composable
@@ -291,20 +289,5 @@ fun RecipeDetailsPreview() {
         )
     RecipesAppTheme {
         RecipeDetails(recipe = recipe, modifier = Modifier.padding(4.dp))
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun RecipeDetailsBottomBarPreview() {
-    val recipe =
-        Recipe(
-            id = 1,
-            title = "Recipe 1",
-            updatedAtLocally = LocalDateTime.now(),
-            updatedAtRemotely = LocalDateTime.now(),
-        )
-    RecipesAppTheme {
-        RecipeDetailsBottomBar(recipe = recipe)
     }
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.data.RecipeRepository
+import com.katharina.recipesapp.data.ShoppingListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ class RecipeDetailsViewModel
     @Inject
     constructor(
         private val recipeRepository: RecipeRepository,
+        private val shoppingListRepository: ShoppingListRepository,
         private val savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         sealed class UiState {
@@ -67,6 +69,14 @@ class RecipeDetailsViewModel
                     message = recipeRepository.updateRecipe(recipeId)
                 } else {
                     message = "Missing recipe id"
+                }
+            }
+        }
+
+        fun addIngredientsToShoppingList(recipe: Recipe) {
+            viewModelScope.launch {
+                recipe.ingredients.forEach { ingredient ->
+                    shoppingListRepository.addIngredient(ingredient)
                 }
             }
         }

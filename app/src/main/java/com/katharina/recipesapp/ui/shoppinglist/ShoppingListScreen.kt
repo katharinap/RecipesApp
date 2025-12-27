@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -116,7 +116,7 @@ fun ShoppingListBottomBar(
                     modifier = Modifier.padding(horizontal = 10.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        imageVector = Icons.Default.AddCircle,
                         contentDescription = "Add",
                     )
                 }
@@ -127,8 +127,12 @@ fun ShoppingListBottomBar(
 
 @Composable
 fun ShoppingListFab(onClick: () -> Unit) {
-    FloatingActionButton(onClick = onClick) {
-        Icon(Icons.Default.Delete, contentDescription = "Delete Completed")
+    Row {
+        FloatingActionButton(
+            onClick = onClick,
+        ) {
+            Icon(Icons.Default.Done, contentDescription = "Delete All")
+        }
     }
 }
 
@@ -145,7 +149,7 @@ fun ShoppingList(
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None,
-                modifier = Modifier.clickable { onItemClicked(item) },
+                modifier = Modifier.clickable { onItemClicked(item) }.padding(4.dp),
             )
         }
     }

@@ -24,15 +24,13 @@ interface DbRepository {
 
     suspend fun getShoppingListItemsFlow(): Flow<List<ShoppingListItem>>
 
-    suspend fun getShoppingListItemFlow(id: Int): Flow<ShoppingListItem?>
-
     suspend fun updateShoppingListItem(item: ShoppingListItem)
-
-    suspend fun deleteShoppingListItem(id: Int)
 
     suspend fun deleteCheckedShoppingListItems()
 
     suspend fun deleteAllShoppingListItems()
+
+    suspend fun addShoppingListItem(ingredient: String)
 }
 
 @Singleton
@@ -71,18 +69,18 @@ class DefaultDbRepository
                 }
             }
 
-        override suspend fun getShoppingListItemFlow(id: Int): Flow<ShoppingListItem?> =
-            shoppingListDao.getById(id).map {
-                it?.toShoppingListItem()
-            }
-
         override suspend fun updateShoppingListItem(item: ShoppingListItem) = shoppingListDao.createOrUpdate(item.toDbShoppingListItem())
-
-        override suspend fun deleteShoppingListItem(id: Int) = shoppingListDao.delete(id)
 
         override suspend fun deleteCheckedShoppingListItems() = shoppingListDao.deleteChecked()
 
         override suspend fun deleteAllShoppingListItems() = shoppingListDao.deleteAll()
+
+        override suspend fun addShoppingListItem(ingredient: String) {
+            val existingItem = shoppingListDao.getByName(ingredient)
+            if (existingItem == null) {
+                shoppingListDao.createOrUpdate(DbShoppingListItem(name = ingredient))
+            }
+        }
 
         private fun DbRecipe.toRecipe(): Recipe =
             Recipe(
