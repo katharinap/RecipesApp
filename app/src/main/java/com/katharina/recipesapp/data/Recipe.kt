@@ -12,13 +12,8 @@ data class Recipe(
     val imageUrl: String? = null,
     val updatedAtRemotely: LocalDateTime? = null,
     val updatedAtLocally: LocalDateTime? = null,
+    val language: String? = null,
 ) {
-    fun needsUpdate(): Boolean {
-        if (updatedAtRemotely == null) return true
-        if (updatedAtLocally == null) return true
-        return updatedAtRemotely.isAfter(updatedAtLocally)
-    }
-
     fun getRemoteImageUrl(): String? {
         if (imageUrl == null) {
             return null
@@ -26,4 +21,6 @@ data class Recipe(
             return Constants.IMAGE_BASE_URL + imageUrl
         }
     }
+
+    fun isGerman(): Boolean = language == "german"
 }

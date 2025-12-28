@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -30,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,6 +69,7 @@ fun RecipeDetailsScreen(
                 topBar = {
                     RecipeDetailsTopBar(recipe = recipe, onGoToShoppingList = onGoToShoppingList, onGoToRecipeList = onGoToRecipeList)
                 },
+                floatingActionButton = { RecipeDetailsRefreshButton(onClick = viewModel::updateRecipe) },
             ) { innerPadding ->
 
                 RecipeDetails(
@@ -152,7 +157,7 @@ fun RecipeDetails(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = "Ingredients",
+                text = if (recipe.isGerman()) stringResource(R.string.ingredients_de) else stringResource(R.string.ingredients_en),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -176,7 +181,7 @@ fun RecipeDetails(
         }
 
         Text(
-            text = "Directions",
+            text = if (recipe.isGerman()) stringResource(R.string.direction_de) else stringResource(R.string.direction_en),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 8.dp),
@@ -236,6 +241,16 @@ fun RecipeDetailsTopBar(
     )
 }
 
+@Composable
+fun RecipeDetailsRefreshButton(onClick: () -> Unit) {
+    val showButton = false
+    if (showButton) {
+        FloatingActionButton(onClick = onClick) {
+            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
+        }
+    }
+}
+
 @PreviewLightDark
 @Composable
 fun RecipeDetailsTopBarPreview() {
@@ -265,6 +280,7 @@ fun RecipeDetailsPreview() {
             tags = listOf("tag1", "tag2"),
             updatedAtRemotely = LocalDateTime.now(),
             updatedAtLocally = LocalDateTime.now(),
+            language = "german",
         )
     RecipesAppTheme {
         RecipeDetails(recipe = recipe, modifier = Modifier.padding(4.dp))

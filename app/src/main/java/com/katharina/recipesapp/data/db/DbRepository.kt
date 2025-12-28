@@ -92,6 +92,7 @@ class DefaultDbRepository
                 imageUrl = imageUrl,
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
+                language = language,
             )
 
         private fun Recipe.toDbRecipe(): DbRecipe =
@@ -104,6 +105,7 @@ class DefaultDbRepository
                 imageUrl = imageUrl,
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
+                language = language,
             )
 
         private fun DbShoppingListItem.toShoppingListItem(): ShoppingListItem =

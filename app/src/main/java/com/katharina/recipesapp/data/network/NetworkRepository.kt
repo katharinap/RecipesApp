@@ -76,5 +76,6 @@ class DefaultNetworkRepository
                         java.time.Instant.parse(updatedAt),
                         java.time.ZoneId.systemDefault(),
                     ),
+                language = language,
             )
     }

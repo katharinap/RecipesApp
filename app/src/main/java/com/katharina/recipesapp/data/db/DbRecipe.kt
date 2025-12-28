@@ -14,4 +14,5 @@ data class DbRecipe(
     val imageUrl: String?,
     val updatedAtRemotely: LocalDateTime?,
     val updatedAtLocally: LocalDateTime?,
+    val language: String?,
 )

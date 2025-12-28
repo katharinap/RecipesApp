@@ -15,4 +15,5 @@ data class RecipeDetailsResponse(
     val picturePath: String,
     @SerialName(value = "updated_at")
     val updatedAt: String,
+    val language: String,
 )
