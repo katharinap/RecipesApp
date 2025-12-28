@@ -142,11 +142,11 @@ fun ShoppingList(
     listItems: List<ShoppingListItem>,
     onItemClicked: (ShoppingListItem) -> Unit = {},
 ) {
-    LazyColumn(modifier = modifier.then(Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background))) {
+    LazyColumn(modifier = modifier.then(Modifier.padding(4.dp).fillMaxSize().background(color = MaterialTheme.colorScheme.background))) {
         items(items = listItems) { item ->
             Text(
                 text = item.name,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None,
                 modifier = Modifier.clickable { onItemClicked(item) }.padding(4.dp),

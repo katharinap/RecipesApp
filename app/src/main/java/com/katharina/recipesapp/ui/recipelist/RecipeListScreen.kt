@@ -231,7 +231,7 @@ fun RecipeListItem(
             Image(
                 painter = painterResource(R.drawable.recipe_default_350),
                 contentDescription = "Default Recipe Image",
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier =
                     Modifier
                         .size(50.dp)

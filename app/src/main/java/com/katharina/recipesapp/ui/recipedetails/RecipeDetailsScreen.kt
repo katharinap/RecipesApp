@@ -14,9 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -64,12 +65,6 @@ fun RecipeDetailsScreen(
                 topBar = {
                     RecipeDetailsTopBar(recipe = recipe, onGoToShoppingList = onGoToShoppingList, onGoToRecipeList = onGoToRecipeList)
                 },
-//                floatingActionButton = {
-//                    AddIngredientsToShoppingListButton(
-//                        recipe = recipe,
-//                        onClick = viewModel::addIngredientsToShoppingList,
-//                    )
-//                },
             ) { innerPadding ->
 
                 RecipeDetails(
@@ -82,21 +77,6 @@ fun RecipeDetailsScreen(
     }
 }
 
-// @Composable
-// fun AddIngredientsToShoppingListButton(
-//    recipe: Recipe,
-//    onClick: (Recipe) -> Unit = {},
-// ) {
-//    FloatingActionButton(
-//        onClick = { onClick(recipe) },
-//    ) {
-//        Icon(
-//            painter = painterResource(R.drawable.baseline_list_alt_24),
-//            contentDescription = "Add Ingredients to Shopping List",
-//        )
-//    }
-// }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetails(
@@ -108,6 +88,7 @@ fun RecipeDetails(
         modifier =
             modifier.then(
                 Modifier
+                    .padding(8.dp)
                     .background(color = MaterialTheme.colorScheme.surface)
                     .verticalScroll(rememberScrollState()),
             ),
@@ -121,7 +102,7 @@ fun RecipeDetails(
                 Image(
                     painter = painterResource(R.drawable.recipe_default_350),
                     contentDescription = "Default Recipe Image",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier.size(300.dp),
                     alignment = Alignment.Center,
                 )
@@ -175,14 +156,23 @@ fun RecipeDetails(
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Button(
+            IconButton(
                 onClick = { onAddIngredientsToShoppingList(recipe) },
+                colors =
+                    IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                    ),
             ) {
                 Icon(painter = painterResource(R.drawable.outline_list_alt_add_24), contentDescription = "Add to Shopping List")
             }
         }
         recipe.ingredients.forEach { ingredient ->
-            Text(text = "- $ingredient", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = "• $ingredient",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
         }
 
         Text(
@@ -192,7 +182,12 @@ fun RecipeDetails(
             modifier = Modifier.padding(top = 8.dp),
         )
         recipe.directions.forEach { direction ->
-            Text(text = direction, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = direction,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(top = 4.dp),
+            )
         }
     }
 }
@@ -240,22 +235,6 @@ fun RecipeDetailsTopBar(
             ),
     )
 }
-
-// @Composable
-// fun RecipeDetailsRefreshButton(
-//    recipe: Recipe,
-//    onRefresh: () -> Unit,
-// ) {
-//    val show = true // recipe.needsUpdate()
-//
-//    if (show) {
-//        FloatingActionButton(
-//            onClick = { onRefresh() },
-//        ) {
-//            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
-//        }
-//    }
-// }
 
 @PreviewLightDark
 @Composable
