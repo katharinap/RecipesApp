@@ -1,5 +1,6 @@
 package com.katharina.recipesapp.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
@@ -15,4 +16,6 @@ data class DbRecipe(
     val updatedAtRemotely: LocalDateTime?,
     val updatedAtLocally: LocalDateTime?,
     val language: String?,
+    @ColumnInfo(defaultValue = "false")
+    val starred: Boolean,
 )

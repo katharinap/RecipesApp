@@ -45,7 +45,7 @@ class RecipeDetailsViewModel
             if (recipeId != null) {
                 viewModelScope.launch {
                     try {
-                        recipeRepository.getRecipeById(recipeId).collect { recipe ->
+                        recipeRepository.getRecipeFlow(recipeId).collect { recipe ->
                             if (recipe != null) {
                                 _uiState.value = UiState.Success(recipe)
                             } else {
@@ -66,7 +66,7 @@ class RecipeDetailsViewModel
             viewModelScope.launch {
                 val recipeId = savedStateHandle.get<Int>("recipeId")
                 if (recipeId != null) {
-                    message = recipeRepository.updateRecipe(recipeId)
+                    message = recipeRepository.fetchRecipe(recipeId)
                 } else {
                     message = "Missing recipe id"
                 }
@@ -77,6 +77,22 @@ class RecipeDetailsViewModel
             viewModelScope.launch {
                 recipe.ingredients.forEach { ingredient ->
                     shoppingListRepository.addIngredient(ingredient)
+                }
+            }
+        }
+
+        fun toggleStarred() {
+            viewModelScope.launch {
+                val recipeId = savedStateHandle.get<Int>("recipeId")
+                if (recipeId != null) {
+                    val recipe = recipeRepository.getRecipe(recipeId)
+                    if (recipe != null) {
+                        recipeRepository.updateRecipe(recipe.copy(starred = !recipe.starred))
+                    } else {
+                        message = "Invalid recipe id $recipeId"
+                    }
+                } else {
+                    message = "Missing recipe id"
                 }
             }
         }

@@ -63,7 +63,7 @@ class RecipeListViewModel
         fun updateRecipes() {
             viewModelScope.launch {
                 val force = false
-                message = recipeRepository.updateRecipes(force)
+                message = recipeRepository.fetchRecipes(force)
             }
         }
 
@@ -100,6 +100,13 @@ class RecipeListViewModel
                 } catch (exception: Error) {
                     println(exception.message)
                 }
+            }
+        }
+
+        fun loadStarredRecipes() {
+            query = ""
+            viewModelScope.launch {
+                _uiState.value = UiState.Success(recipes = recipes.filter { recipe -> recipe.starred })
             }
         }
     }

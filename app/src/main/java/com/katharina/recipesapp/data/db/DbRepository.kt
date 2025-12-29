@@ -20,6 +20,8 @@ interface DbRepository {
 
     suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?>
 
+    suspend fun getRecipe(recipeId: Int): Recipe?
+
     suspend fun updateRecipe(recipe: Recipe)
 
     suspend fun getShoppingListItemsFlow(): Flow<List<ShoppingListItem>>
@@ -55,6 +57,8 @@ class DefaultDbRepository
         override suspend fun getAllRecipes(): List<Recipe> = recipeDao.getAllRecipes().map { it.toRecipe() }
 
         override suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?> = recipeDao.getRecipeFlow(recipeId).map { it?.toRecipe() }
+
+        override suspend fun getRecipe(recipeId: Int): Recipe? = recipeDao.getRecipe(recipeId)?.toRecipe()
 
         override suspend fun updateRecipe(recipe: Recipe) {
             withContext(Dispatchers.IO) {
@@ -93,6 +97,7 @@ class DefaultDbRepository
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
                 language = language,
+                starred = starred,
             )
 
         private fun Recipe.toDbRecipe(): DbRecipe =
@@ -106,6 +111,7 @@ class DefaultDbRepository
                 updatedAtRemotely = updatedAtRemotely,
                 updatedAtLocally = updatedAtLocally,
                 language = language,
+                starred = starred,
             )
 
         private fun DbShoppingListItem.toShoppingListItem(): ShoppingListItem =

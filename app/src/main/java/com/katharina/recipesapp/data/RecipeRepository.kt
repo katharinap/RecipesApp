@@ -11,15 +11,19 @@ import javax.inject.Singleton
 interface RecipeRepository {
     suspend fun getAllRecipes(): Flow<List<Recipe>>
 
-    suspend fun getRecipeById(recipeId: Int): Flow<Recipe?>
+    suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?>
+
+    suspend fun getRecipe(recipeId: Int): Recipe?
 
     suspend fun searchRecipes(query: String): Flow<List<Recipe>>
 
     suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>>
 
-    suspend fun updateRecipes(force: Boolean): String
+    suspend fun updateRecipe(recipe: Recipe)
 
-    suspend fun updateRecipe(recipeId: Int): String
+    suspend fun fetchRecipes(force: Boolean): String
+
+    suspend fun fetchRecipe(recipeId: Int): String
 }
 
 @Singleton
@@ -35,9 +39,13 @@ class DefaultRecipesRepository
 
         override suspend fun getRecipesWithTag(tag: String): Flow<List<Recipe>> = dbRepository.getRecipesWithTag(tag)
 
-        override suspend fun getRecipeById(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipeFlow(recipeId)
+        override suspend fun updateRecipe(recipe: Recipe) = dbRepository.updateRecipe(recipe)
 
-        override suspend fun updateRecipes(force: Boolean): String {
+        override suspend fun getRecipeFlow(recipeId: Int): Flow<Recipe?> = dbRepository.getRecipeFlow(recipeId)
+
+        override suspend fun getRecipe(recipeId: Int): Recipe? = dbRepository.getRecipe(recipeId)
+
+        override suspend fun fetchRecipes(force: Boolean): String {
             val response = networkRepository.getRecipes()
 
             if (response is NetworkResult.Success) {
@@ -48,8 +56,7 @@ class DefaultRecipesRepository
                 response.data.forEach { recipeRemote ->
                     val needsUpdate = force || localRecipes.get(recipeRemote.id)?.isBefore(recipeRemote.updatedAtRemotely) ?: true
                     if (needsUpdate) {
-                        // dbRepository.updateRecipe(recipeRemote)
-                        updateRecipe(recipeRemote.id)
+                        fetchRecipe(recipeRemote.id)
                         updateCount++
                     }
                 }
@@ -59,10 +66,11 @@ class DefaultRecipesRepository
             }
         }
 
-        override suspend fun updateRecipe(recipeId: Int): String {
+        override suspend fun fetchRecipe(recipeId: Int): String {
             val response = networkRepository.getRecipe(recipeId)
             if (response is NetworkResult.Success) {
-                val recipe = response.data.copy(updatedAtLocally = LocalDateTime.now())
+                val starred = dbRepository.getRecipe(recipeId)?.starred!!
+                val recipe = response.data.copy(updatedAtLocally = LocalDateTime.now(), starred = starred)
                 dbRepository.updateRecipe(recipe)
                 return "Successfully fetched recipe ${response.data.title}"
             } else {

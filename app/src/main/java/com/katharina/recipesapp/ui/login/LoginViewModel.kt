@@ -40,7 +40,7 @@ class LoginViewModel
 
         fun updateRecipe(recipeId: Int) {
             viewModelScope.launch {
-                message = recipeRepository.updateRecipe(recipeId)
+                message = recipeRepository.fetchRecipe(recipeId)
             }
         }
     }

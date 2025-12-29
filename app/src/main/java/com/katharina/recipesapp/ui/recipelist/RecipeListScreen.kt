@@ -72,6 +72,7 @@ fun RecipeListScreen(
                 onSearch = { viewModel.searchRecipes(it) },
                 taglist = viewModel.taglist,
                 onTagSelected = viewModel::loadRecipesWithTag,
+                onLoadStarred = viewModel::loadStarredRecipes,
             )
         },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
@@ -145,7 +146,8 @@ fun RecipeListBottomBar(
     query: String,
     onSearch: (String) -> Unit,
     taglist: List<String> = listOf(),
-    onTagSelected: (String) -> Unit = {},
+    onTagSelected: (String) -> Unit,
+    onLoadStarred: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -154,13 +156,18 @@ fun RecipeListBottomBar(
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onLoadStarred) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_star_24),
+                    contentDescription = "Starred",
+                )
+            }
             IconButton(onClick = { menuExpanded = !menuExpanded }) {
                 Icon(
                     painter = painterResource(R.drawable.outline_tag_24),
                     contentDescription = "Tags",
                 )
             }
-
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = query,
@@ -308,6 +315,8 @@ fun RecipeListBottomBarPreview() {
         RecipeListBottomBar(
             query = "lentil",
             onSearch = {},
+            onTagSelected = {},
+            onLoadStarred = {},
         )
     }
 }

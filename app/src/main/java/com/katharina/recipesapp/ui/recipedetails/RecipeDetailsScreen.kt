@@ -67,7 +67,12 @@ fun RecipeDetailsScreen(
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
-                    RecipeDetailsTopBar(recipe = recipe, onGoToShoppingList = onGoToShoppingList, onGoToRecipeList = onGoToRecipeList)
+                    RecipeDetailsTopBar(
+                        recipe = recipe,
+                        onGoToShoppingList = onGoToShoppingList,
+                        onGoToRecipeList = onGoToRecipeList,
+                        onToggleStarred = viewModel::toggleStarred,
+                    )
                 },
                 floatingActionButton = { RecipeDetailsRefreshButton(onClick = viewModel::updateRecipe) },
             ) { innerPadding ->
@@ -203,6 +208,7 @@ fun RecipeDetailsTopBar(
     recipe: Recipe,
     onGoToShoppingList: () -> Unit,
     onGoToRecipeList: () -> Unit,
+    onToggleStarred: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -211,7 +217,7 @@ fun RecipeDetailsTopBar(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_cookie_24),
                         contentDescription = "Cookie",
@@ -224,6 +230,20 @@ fun RecipeDetailsTopBar(
                                 start = 10.dp,
                             ),
                     )
+                    IconButton(onClick = onToggleStarred) {
+                        Icon(
+                            painter =
+                                if (recipe.starred) {
+                                    painterResource(
+                                        R.drawable.baseline_star_24,
+                                    )
+                                } else {
+                                    painterResource(R.drawable.outline_star_24)
+                                },
+                            contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
                 Icon(
                     painter = painterResource(R.drawable.baseline_list_alt_24),
@@ -264,6 +284,7 @@ fun RecipeDetailsTopBarPreview() {
             recipe = recipe,
             onGoToShoppingList = {},
             onGoToRecipeList = {},
+            onToggleStarred = {},
         )
     }
 }
@@ -281,6 +302,7 @@ fun RecipeDetailsPreview() {
             updatedAtRemotely = LocalDateTime.now(),
             updatedAtLocally = LocalDateTime.now(),
             language = "german",
+            starred = false,
         )
     RecipesAppTheme {
         RecipeDetails(recipe = recipe, modifier = Modifier.padding(4.dp))
