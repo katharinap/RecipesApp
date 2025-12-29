@@ -1,6 +1,5 @@
 package com.katharina.recipesapp.ui.recipedetails
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -122,12 +121,10 @@ fun RecipeDetails(
             verticalArrangement = Arrangement.Center,
         ) {
             if (recipe.imageUrl == null) {
-                Image(
-                    painter = painterResource(R.drawable.recipe_default_350),
-                    contentDescription = "Default Recipe Image",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(300.dp),
-                    alignment = Alignment.Center,
+                Text(
+                    text = "\uD83C\uDF72",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             } else {
                 recipe.getRemoteImageUrl()?.let {

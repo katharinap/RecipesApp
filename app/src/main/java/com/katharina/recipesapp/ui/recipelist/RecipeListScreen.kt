@@ -1,6 +1,5 @@
 package com.katharina.recipesapp.ui.recipelist
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -220,6 +219,8 @@ fun RecipeList(
     recipes: List<Recipe>,
     onRecipeSelected: (Int) -> Unit,
 ) {
+    if (recipes.isEmpty()) return RecipeEmptyList()
+
     LazyColumn(
         modifier =
             Modifier
@@ -234,21 +235,38 @@ fun RecipeList(
 }
 
 @Composable
+fun RecipeEmptyList() {
+    Column(
+        modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "No recipes found",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            text = "\uD83E\uDD7A",
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 16.dp),
+        )
+    }
+}
+
+@Composable
 fun RecipeListItem(
     recipe: Recipe,
     onRecipeSelected: (Int) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (recipe.imageUrl == null) {
-            Image(
-                painter = painterResource(R.drawable.recipe_default_350),
-                contentDescription = "Default Recipe Image",
-                contentScale = ContentScale.Fit,
-                modifier =
-                    Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(16.dp)),
-                alignment = Alignment.Center,
+            Text(
+                text = "\uD83C\uDF72",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.primary,
             )
         } else {
             recipe.getRemoteImageUrl()?.let {
@@ -305,6 +323,18 @@ fun RecipeListPreview() {
             ),
         )
 
+    RecipesAppTheme {
+        RecipeList(
+            recipes = recipes,
+            onRecipeSelected = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun RecipeEmptyListPreview() {
+    val recipes = emptyList<Recipe>()
     RecipesAppTheme {
         RecipeList(
             recipes = recipes,
