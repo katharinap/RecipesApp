@@ -49,16 +49,16 @@ class RecipeDetailsViewModel
                             if (recipe != null) {
                                 _uiState.value = UiState.Success(recipe)
                             } else {
-                                message = "Failed to get recipe with id $recipeId"
+                                showSnackbarMessage("Failed to get recipe with id $recipeId")
                             }
                         }
                     } catch (exception: Error) {
-                        message = exception.message ?: "Unknown error"
+                        showSnackbarMessage(exception.message ?: "Unknown error")
                         println(exception.message)
                     }
                 }
             } else {
-                message = "Missing recipe id"
+                showSnackbarMessage("Missing recipe id")
             }
         }
 
@@ -66,9 +66,10 @@ class RecipeDetailsViewModel
             viewModelScope.launch {
                 val recipeId = savedStateHandle.get<Int>("recipeId")
                 if (recipeId != null) {
-                    message = recipeRepository.fetchRecipe(recipeId)
+                    val text = recipeRepository.fetchRecipe(recipeId)
+                    showSnackbarMessage(text)
                 } else {
-                    message = "Missing recipe id"
+                    showSnackbarMessage("Missing recipe id")
                 }
             }
         }
@@ -78,6 +79,7 @@ class RecipeDetailsViewModel
                 recipe.ingredients.forEach { ingredient ->
                     shoppingListRepository.addIngredient(ingredient)
                 }
+                showSnackbarMessage("Added ingredients to shopping list")
             }
         }
 
@@ -89,11 +91,19 @@ class RecipeDetailsViewModel
                     if (recipe != null) {
                         recipeRepository.updateRecipe(recipe.copy(starred = !recipe.starred))
                     } else {
-                        message = "Invalid recipe id $recipeId"
+                        showSnackbarMessage("Invalid recipe id $recipeId")
                     }
                 } else {
-                    message = "Missing recipe id"
+                    showSnackbarMessage("Missing recipe id")
                 }
             }
+        }
+
+        fun snackbarMessageShown() {
+            message = ""
+        }
+
+        private fun showSnackbarMessage(text: String) {
+            message = text
         }
     }

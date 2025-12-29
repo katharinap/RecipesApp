@@ -23,11 +23,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +51,7 @@ import java.time.LocalDateTime
 @Composable
 fun RecipeDetailsScreen(
     viewModel: RecipeDetailsViewModel,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onGoToShoppingList: () -> Unit,
     onGoToRecipeList: () -> Unit,
 ) {
@@ -75,6 +80,7 @@ fun RecipeDetailsScreen(
                     )
                 },
                 floatingActionButton = { RecipeDetailsRefreshButton(onClick = viewModel::updateRecipe) },
+                snackbarHost = { SnackbarHost(snackbarHostState) },
             ) { innerPadding ->
 
                 RecipeDetails(
@@ -82,6 +88,13 @@ fun RecipeDetailsScreen(
                     onAddIngredientsToShoppingList = viewModel::addIngredientsToShoppingList,
                     Modifier.padding(innerPadding),
                 )
+
+                if (viewModel.message.isNotEmpty()) {
+                    LaunchedEffect(snackbarHostState, viewModel, viewModel.message) {
+                        snackbarHostState.showSnackbar(viewModel.message)
+                        viewModel.snackbarMessageShown()
+                    }
+                }
             }
         }
     }

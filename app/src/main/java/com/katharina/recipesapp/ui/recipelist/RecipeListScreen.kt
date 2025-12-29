@@ -1,6 +1,5 @@
 package com.katharina.recipesapp.ui.recipelist
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,10 +28,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 @Composable
 fun RecipeListScreen(
     viewModel: RecipeListViewModel,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onRecipeSelected: (Int) -> Unit,
     onGoToShoppingList: () -> Unit,
 ) {
@@ -76,6 +78,7 @@ fun RecipeListScreen(
             )
         },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
@@ -96,8 +99,10 @@ fun RecipeListScreen(
         }
 
         if (viewModel.message.isNotEmpty()) {
-            val toast = Toast.makeText(LocalContext.current, viewModel.message, Toast.LENGTH_LONG)
-            toast.show()
+            LaunchedEffect(snackbarHostState, viewModel, viewModel.message) {
+                snackbarHostState.showSnackbar(viewModel.message)
+                viewModel.snackbarMessageShown()
+            }
         }
     }
 }

@@ -55,6 +55,7 @@ class RecipeListViewModel
                             UiState.Success(recipes = recipes)
                     }
                 } catch (exception: Error) {
+                    showSnackbarMessage(exception.message ?: "Unknown error")
                     println(exception.message)
                 }
             }
@@ -63,7 +64,8 @@ class RecipeListViewModel
         fun updateRecipes() {
             viewModelScope.launch {
                 val force = false
-                message = recipeRepository.fetchRecipes(force)
+                val text = recipeRepository.fetchRecipes(force)
+                showSnackbarMessage(text)
             }
         }
 
@@ -80,6 +82,7 @@ class RecipeListViewModel
                         }
                     }
                 } catch (exception: Error) {
+                    showSnackbarMessage(exception.message ?: "Unknown error")
                     println(exception.message)
                 }
             }
@@ -98,6 +101,7 @@ class RecipeListViewModel
                         }
                     }
                 } catch (exception: Error) {
+                    showSnackbarMessage(exception.message ?: "Unknown error")
                     println(exception.message)
                 }
             }
@@ -108,5 +112,13 @@ class RecipeListViewModel
             viewModelScope.launch {
                 _uiState.value = UiState.Success(recipes = recipes.filter { recipe -> recipe.starred })
             }
+        }
+
+        fun snackbarMessageShown() {
+            message = ""
+        }
+
+        private fun showSnackbarMessage(text: String) {
+            message = text
         }
     }
