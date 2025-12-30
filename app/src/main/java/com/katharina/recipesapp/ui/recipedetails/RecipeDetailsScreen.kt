@@ -2,7 +2,6 @@ package com.katharina.recipesapp.ui.recipedetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -32,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +43,7 @@ import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
+import com.katharina.recipesapp.ui.utils.TagItem
 import java.time.LocalDateTime
 
 @Composable
@@ -144,28 +142,14 @@ fun RecipeDetails(
         }
 
         if (recipe.tags.isNotEmpty()) {
-            Row(modifier = Modifier.padding(4.dp)) {
+            Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(R.drawable.outline_tag_24),
                     contentDescription = "Tags",
                     tint = MaterialTheme.colorScheme.tertiary,
                 )
                 recipe.tags.forEach { tag ->
-                    Box(
-                        modifier =
-                            Modifier
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(percent = 25))
-                                .background(color = MaterialTheme.colorScheme.tertiaryContainer),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = tag,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.padding(4.dp),
-                        )
-                    }
+                    TagItem(tag = tag)
                 }
             }
         }

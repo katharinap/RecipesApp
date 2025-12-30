@@ -1,7 +1,5 @@
 package com.katharina.recipesapp.ui.recipelist
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +18,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -53,6 +50,7 @@ import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.RecipeList
+import com.katharina.recipesapp.ui.utils.TagItem
 
 @Composable
 fun RecipeListScreen(
@@ -199,36 +197,37 @@ fun TagSearchDialog(
         Card(
             modifier =
                 Modifier
+//                    .fillMaxSize()
                     .fillMaxWidth()
-                    .height(400.dp)
+//                    .height(400.dp)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
-
             shape = RoundedCornerShape(16.dp),
         ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_tag_24),
+                        contentDescription = "Tags",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = "Tag Search",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+            HorizontalDivider(thickness = 2.dp)
             FlowRow(modifier = Modifier.padding(8.dp)) {
                 taglist.forEach { tag ->
-                    Box(
-                        modifier =
-                            Modifier
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(percent = 25))
-                                .background(color = MaterialTheme.colorScheme.tertiaryContainer),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = tag,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.tertiary,
-                            modifier =
-                                Modifier
-                                    .padding(4.dp)
-                                    .clickable {
-                                        onSearch(tag)
-                                        onDismissRequest()
-                                    },
-                        )
-                    }
+                    TagItem(
+                        tag = tag,
+                        onClick = {
+                            onSearch(tag)
+                            onDismissRequest()
+                        },
+                    )
                 }
             }
         }
