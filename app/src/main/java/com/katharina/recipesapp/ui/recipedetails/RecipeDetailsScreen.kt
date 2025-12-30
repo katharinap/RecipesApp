@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -42,6 +43,8 @@ import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.utils.LinkShare
+import com.katharina.recipesapp.ui.utils.LinkShareDisabled
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.TagItem
 import java.time.LocalDateTime
@@ -227,19 +230,25 @@ fun RecipeDetailsTopBar(
                     )
                 }
 
-                IconButton(onClick = onToggleStarred) {
-                    Icon(
-                        painter =
-                            if (recipe.starred) {
-                                painterResource(
-                                    R.drawable.baseline_star_24,
-                                )
-                            } else {
-                                painterResource(R.drawable.outline_star_24)
-                            },
-                        contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onToggleStarred) {
+                        Icon(
+                            painter =
+                                if (recipe.starred) {
+                                    painterResource(R.drawable.baseline_star_24)
+                                } else {
+                                    painterResource(R.drawable.outline_star_24)
+                                },
+                            contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+
+                    if (recipe.source != null && recipe.source.startsWith("http")) {
+                        LinkShare(link = recipe.source, context = LocalContext.current)
+                    } else {
+                        LinkShareDisabled()
+                    }
                 }
             }
         },
