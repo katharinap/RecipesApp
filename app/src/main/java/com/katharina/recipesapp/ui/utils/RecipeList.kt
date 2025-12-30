@@ -34,6 +34,7 @@ fun RecipeList(
     LazyColumn(
         modifier =
             Modifier
+                .padding(4.dp)
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(8.dp),

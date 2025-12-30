@@ -50,7 +50,7 @@ class RecipeListViewModel
                 try {
                     recipeRepository.getAllRecipes().collect { result ->
                         recipes = result.shuffled()
-                        taglist = listOf("-") + result.flatMap { it.tags }.distinct().sorted()
+                        taglist = result.flatMap { it.tags }.distinct().sorted()
                         _uiState.value =
                             UiState.Success(recipes = recipes)
                     }
@@ -88,29 +88,17 @@ class RecipeListViewModel
             }
         }
 
-        fun loadRecipesWithTag(tag: String) {
+        fun searchRecipesByTag(tag: String) {
             query = ""
             viewModelScope.launch {
                 try {
-                    if (tag.equals("-")) {
-                        _uiState.value = UiState.Success(recipes = recipes)
-                        return@launch
-                    } else {
-                        recipeRepository.getRecipesWithTag(tag).collect { result ->
-                            _uiState.value = UiState.Success(result.shuffled())
-                        }
+                    recipeRepository.getRecipesWithTag(tag).collect { result ->
+                        _uiState.value = UiState.Success(result.shuffled())
                     }
                 } catch (exception: Error) {
                     showSnackbarMessage(exception.message ?: "Unknown error")
                     println(exception.message)
                 }
-            }
-        }
-
-        fun loadStarredRecipes() {
-            query = ""
-            viewModelScope.launch {
-                _uiState.value = UiState.Success(recipes = recipes.filter { recipe -> recipe.starred })
             }
         }
 

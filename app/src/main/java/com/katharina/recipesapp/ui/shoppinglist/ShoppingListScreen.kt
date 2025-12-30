@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,9 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -106,41 +106,43 @@ fun ShoppingListTopBar(
     onUpdateNextItem: (String) -> Unit,
     onAddItem: () -> Unit,
 ) {
-    TopAppBar(
-        title = {
-                SearchBar(
-                    inputField = {
-                            SearchBarDefaults.InputField(
-                                query = nextItem,
-                                onQueryChange = {
-                                    onUpdateNextItem(it)
-                                },
-                                onSearch = { onAddItem() },
-                                expanded = false,
-                                onExpandedChange = {},
-                                leadingIcon = {
-                                    IconButton(onClick = {onUpdateNextItem("")}) {
-                                        Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
-                                    }
-                                },
-                                trailingIcon = {
-                                    IconButton(onClick = { onAddItem()}){
-                                        Icon(imageVector = Icons.Default.Done, contentDescription = "Add")
-
-                                    }
-                                }
-                            )
-                        },
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        SearchBar(
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = nextItem,
+                    onQueryChange = {
+                        onUpdateNextItem(it)
+                    },
+                    onSearch = { onAddItem() },
                     expanded = false,
-                    onExpandedChange = { },
-                ) {}
-        },
-        colors =
-            topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                titleContentColor = MaterialTheme.colorScheme.primary,
-            ),
-    )
+                    onExpandedChange = {},
+                    leadingIcon = {
+                        IconButton(onClick = { onUpdateNextItem("") }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear",
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { onAddItem() }) {
+                            Icon(
+                                imageVector = Icons.Default.Done,
+                                contentDescription = "Add",
+                            )
+                        }
+                    },
+                    placeholder = { Text(text = "Item") },
+                )
+            },
+            expanded = false,
+            onExpandedChange = { },
+        ) {}
+    }
 }
 
 @PreviewLightDark
