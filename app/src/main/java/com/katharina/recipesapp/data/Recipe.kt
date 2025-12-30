@@ -14,6 +14,7 @@ data class Recipe(
     val updatedAtLocally: LocalDateTime? = null,
     val language: String? = null,
     val starred: Boolean = false,
+    val source: String? = null,
 ) {
     fun getRemoteImageUrl(): String? {
         if (imageUrl == null) {

@@ -98,6 +98,7 @@ class DefaultDbRepository
                 updatedAtLocally = updatedAtLocally,
                 language = language,
                 starred = starred,
+                source = source,
             )
 
         private fun Recipe.toDbRecipe(): DbRecipe =
@@ -112,6 +113,7 @@ class DefaultDbRepository
                 updatedAtLocally = updatedAtLocally,
                 language = language,
                 starred = starred,
+                source = source,
             )
 
         private fun DbShoppingListItem.toShoppingListItem(): ShoppingListItem =

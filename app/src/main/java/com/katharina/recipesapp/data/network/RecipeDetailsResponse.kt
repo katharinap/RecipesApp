@@ -16,4 +16,5 @@ data class RecipeDetailsResponse(
     @SerialName(value = "updated_at")
     val updatedAt: String,
     val language: String,
+    val source: String,
 )

@@ -18,4 +18,5 @@ data class DbRecipe(
     val language: String?,
     @ColumnInfo(defaultValue = "false")
     val starred: Boolean,
+    val source: String?,
 )
