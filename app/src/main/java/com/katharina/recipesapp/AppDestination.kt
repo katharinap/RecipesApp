@@ -12,6 +12,9 @@ sealed class AppDestination {
     ) : AppDestination()
 
     @Serializable
+    data object RecipeFavorites : AppDestination()
+
+    @Serializable
     data object ShoppingList : AppDestination()
 
     @Serializable

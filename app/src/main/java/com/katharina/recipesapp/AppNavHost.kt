@@ -11,6 +11,8 @@ import com.katharina.recipesapp.ui.login.LoginScreen
 import com.katharina.recipesapp.ui.login.LoginViewModel
 import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsScreen
 import com.katharina.recipesapp.ui.recipedetails.RecipeDetailsViewModel
+import com.katharina.recipesapp.ui.recipefavorites.RecipeFavoritesScreen
+import com.katharina.recipesapp.ui.recipefavorites.RecipeFavoritesVewModel
 import com.katharina.recipesapp.ui.recipelist.RecipeListScreen
 import com.katharina.recipesapp.ui.recipelist.RecipeListViewModel
 import com.katharina.recipesapp.ui.shoppinglist.ShoppingListScreen
@@ -33,30 +35,31 @@ fun AppNavHost(
                 onRecipeSelected = { recipeId ->
                     navController.navigate(AppDestination.RecipeDetails(recipeId))
                 },
-                onGoToShoppingList = {
-                    navController.navigate(AppDestination.ShoppingList)
+                navController = navController,
+            )
+        }
+
+        composable<AppDestination.RecipeFavorites> { navBackStackEntry ->
+            RecipeFavoritesScreen(
+                viewModel = hiltViewModel<RecipeFavoritesVewModel>(),
+                onRecipeSelected = { recipeId ->
+                    navController.navigate(AppDestination.RecipeDetails(recipeId))
                 },
+                navController = navController,
             )
         }
 
         composable<AppDestination.RecipeDetails> { navBackStackEntry ->
             RecipeDetailsScreen(
                 viewModel = hiltViewModel<RecipeDetailsViewModel>(),
-                onGoToShoppingList = {
-                    navController.navigate(AppDestination.ShoppingList)
-                },
-                onGoToRecipeList = {
-                    navController.navigate(AppDestination.RecipeList)
-                },
+                navController = navController,
             )
         }
 
         composable<AppDestination.ShoppingList> { navBackStackEntry ->
             ShoppingListScreen(
                 viewModel = hiltViewModel<ShoppingListViewModel>(),
-                onGoToRecipeList = {
-                    navController.navigate(AppDestination.RecipeList)
-                },
+                navController = navController,
             )
         }
 

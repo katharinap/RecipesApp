@@ -1,7 +1,6 @@
 package com.katharina.recipesapp.ui.recipedetails
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,19 +39,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import java.time.LocalDateTime
 
 @Composable
 fun RecipeDetailsScreen(
     viewModel: RecipeDetailsViewModel,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onGoToShoppingList: () -> Unit,
-    onGoToRecipeList: () -> Unit,
+    navController: NavHostController,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -60,6 +60,9 @@ fun RecipeDetailsScreen(
         RecipeDetailsViewModel.UiState.Loading -> {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
+                bottomBar = {
+                    RecipeBottomAppBar(navController = navController)
+                },
             ) { innerPadding ->
                 LoadingScreen(Modifier.padding(innerPadding))
             }
@@ -73,10 +76,11 @@ fun RecipeDetailsScreen(
                 topBar = {
                     RecipeDetailsTopBar(
                         recipe = recipe,
-                        onGoToShoppingList = onGoToShoppingList,
-                        onGoToRecipeList = onGoToRecipeList,
                         onToggleStarred = viewModel::toggleStarred,
                     )
+                },
+                bottomBar = {
+                    RecipeBottomAppBar(navController = navController)
                 },
                 floatingActionButton = { RecipeDetailsRefreshButton(onClick = viewModel::updateRecipe) },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -216,8 +220,6 @@ fun RecipeDetails(
 @Composable
 fun RecipeDetailsTopBar(
     recipe: Recipe,
-    onGoToShoppingList: () -> Unit,
-    onGoToRecipeList: () -> Unit,
     onToggleStarred: () -> Unit,
 ) {
     TopAppBar(
@@ -231,7 +233,6 @@ fun RecipeDetailsTopBar(
                     Icon(
                         painter = painterResource(R.drawable.baseline_cookie_24),
                         contentDescription = "Cookie",
-                        modifier = Modifier.clickable { onGoToRecipeList() },
                     )
                     Text(
                         text = recipe.title,
@@ -240,26 +241,22 @@ fun RecipeDetailsTopBar(
                                 start = 10.dp,
                             ),
                     )
-                    IconButton(onClick = onToggleStarred) {
-                        Icon(
-                            painter =
-                                if (recipe.starred) {
-                                    painterResource(
-                                        R.drawable.baseline_star_24,
-                                    )
-                                } else {
-                                    painterResource(R.drawable.outline_star_24)
-                                },
-                            contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
                 }
-                Icon(
-                    painter = painterResource(R.drawable.baseline_list_alt_24),
-                    contentDescription = "List",
-                    modifier = Modifier.clickable { onGoToShoppingList() }.padding(end = 10.dp),
-                )
+
+                IconButton(onClick = onToggleStarred) {
+                    Icon(
+                        painter =
+                            if (recipe.starred) {
+                                painterResource(
+                                    R.drawable.baseline_star_24,
+                                )
+                            } else {
+                                painterResource(R.drawable.outline_star_24)
+                            },
+                        contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         },
         modifier = Modifier.fillMaxWidth(),
@@ -292,8 +289,6 @@ fun RecipeDetailsTopBarPreview() {
     RecipesAppTheme {
         RecipeDetailsTopBar(
             recipe = recipe,
-            onGoToShoppingList = {},
-            onGoToRecipeList = {},
             onToggleStarred = {},
         )
     }

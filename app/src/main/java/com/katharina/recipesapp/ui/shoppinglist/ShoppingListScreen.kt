@@ -2,61 +2,56 @@ package com.katharina.recipesapp.ui.shoppinglist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.katharina.recipesapp.R
+import androidx.navigation.NavHostController
 import com.katharina.recipesapp.data.ShoppingListItem
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 
 @Composable
 fun ShoppingListScreen(
     viewModel: ShoppingListViewModel,
-    onGoToRecipeList: () -> Unit,
+    navController: NavHostController,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { ShoppingListTopBar(onGoToRecipeList = onGoToRecipeList) },
-        bottomBar = {
-            ShoppingListBottomBar(
+        topBar = {
+            ShoppingListTopBar(
                 nextItem = viewModel.nextItem,
                 onUpdateNextItem = viewModel::updateNextItem,
                 onAddItem = viewModel::addItem,
             )
+        },
+        bottomBar = {
+            RecipeBottomAppBar(navController = navController)
         },
         floatingActionButton = { ShoppingListFab(onClick = viewModel::deleteAllChecked) },
     ) { innerPadding ->
@@ -71,57 +66,6 @@ fun ShoppingListScreen(
                 ShoppingList(modifier = modifier, listItems = items, onItemClicked = viewModel::toggleCheckedState)
             }
         }
-    }
-}
-
-@Composable
-fun ShoppingListBottomBar(
-    nextItem: String,
-    onUpdateNextItem: (String) -> Unit,
-    onAddItem: () -> Unit,
-) {
-    BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-    ) {
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = nextItem,
-            onValueChange = {
-                onUpdateNextItem(it)
-            },
-            label = { Text("Item") },
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    onClick = {
-                        onUpdateNextItem("")
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear",
-                    )
-                }
-            },
-            trailingIcon = {
-                FilledTonalButton(
-                    onClick = {
-                        onAddItem()
-                        keyboardController?.hide()
-                    },
-                    shape = FloatingActionButtonDefaults.extendedFabShape,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AddCircle,
-                        contentDescription = "Add",
-                    )
-                }
-            },
-        )
     }
 }
 
@@ -157,34 +101,39 @@ fun ShoppingList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingListTopBar(onGoToRecipeList: () -> Unit) {
+fun ShoppingListTopBar(
+    nextItem: String,
+    onUpdateNextItem: (String) -> Unit,
+    onAddItem: () -> Unit,
+) {
     TopAppBar(
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_list_alt_24),
-                        contentDescription = "List",
-                    )
-                    Text(
-                        "Shopping List",
-                        modifier =
-                            Modifier.padding(
-                                start = 10.dp,
-                            ),
-                    )
-                }
-                Icon(
-                    painter = painterResource(R.drawable.baseline_cookie_24),
-                    contentDescription = "Cookie",
-                    modifier =
-                        Modifier.clickable { onGoToRecipeList() }.padding(end = 10.dp),
-                )
-            }
+                SearchBar(
+                    inputField = {
+                            SearchBarDefaults.InputField(
+                                query = nextItem,
+                                onQueryChange = {
+                                    onUpdateNextItem(it)
+                                },
+                                onSearch = { onAddItem() },
+                                expanded = false,
+                                onExpandedChange = {},
+                                leadingIcon = {
+                                    IconButton(onClick = {onUpdateNextItem("")}) {
+                                        Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
+                                    }
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = { onAddItem()}){
+                                        Icon(imageVector = Icons.Default.Done, contentDescription = "Add")
+
+                                    }
+                                }
+                            )
+                        },
+                    expanded = false,
+                    onExpandedChange = { },
+                ) {}
         },
         colors =
             topAppBarColors(
@@ -198,7 +147,11 @@ fun ShoppingListTopBar(onGoToRecipeList: () -> Unit) {
 @Composable
 fun ShoppingListTopBarPreview() {
     RecipesAppTheme {
-        ShoppingListTopBar(onGoToRecipeList = {})
+        ShoppingListTopBar(
+            nextItem = "Item 1",
+            onUpdateNextItem = {},
+            onAddItem = {},
+        )
     }
 }
 
@@ -215,18 +168,6 @@ fun ShoppingListPreview() {
         ShoppingList(
             modifier = Modifier,
             listItems = itemList,
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun ShoppingListBottomBarPreview() {
-    RecipesAppTheme {
-        ShoppingListBottomBar(
-            nextItem = "Item 1",
-            onUpdateNextItem = {},
-            onAddItem = {},
         )
     }
 }
