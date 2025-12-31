@@ -30,11 +30,39 @@ fun TagItem(
     ) {
         Text(
             text = tag,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.tertiary,
             modifier =
                 Modifier
                     .padding(4.dp)
+                    .clickable {
+                        onClick(tag)
+                    },
+        )
+    }
+}
+
+@Composable
+fun TagItemSmall(
+    tag: String,
+    onClick: (String) -> Unit = {},
+) {
+    Box(
+        modifier =
+            Modifier
+                .padding(2.dp)
+                .clip(RoundedCornerShape(percent = 12))
+                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+                .border(width = 1.dp, color = MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(percent = 12)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = tag,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.tertiary,
+            modifier =
+                Modifier
+                    .padding(2.dp)
                     .clickable {
                         onClick(tag)
                     },
