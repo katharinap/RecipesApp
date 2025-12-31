@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.katharina.recipesapp.data.ShoppingListItem
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.theme.handwritingFamily
 import com.katharina.recipesapp.ui.utils.LoadingScreen
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 
@@ -104,6 +105,7 @@ fun ShoppingList(
         items(items = listItems) { item ->
             Text(
                 text = item.name,
+                fontFamily = handwritingFamily,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None,
@@ -127,7 +129,7 @@ fun ShoppingListTopBar(
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             SearchBar(
                 inputField = {
