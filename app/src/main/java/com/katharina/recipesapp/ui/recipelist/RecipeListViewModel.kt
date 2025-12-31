@@ -77,7 +77,7 @@ class RecipeListViewModel
                         _uiState.value = UiState.Success(recipes = recipes)
                         return@launch
                     } else {
-                        recipeRepository.searchRecipes(query).collect { result ->
+                        recipeRepository.searchRecipes(query.trim()).collect { result ->
                             _uiState.value = UiState.Success(result.shuffled())
                         }
                     }

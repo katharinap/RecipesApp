@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.katharina.recipesapp.R
-import com.katharina.recipesapp.ui.LoadingScreen
+import com.katharina.recipesapp.ui.utils.LoadingScreen
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.RecipeList
 

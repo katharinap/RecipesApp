@@ -81,6 +81,10 @@ fun RecipeListItem(
                 text = "\uD83C\uDF72",
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.primary,
+                modifier =
+                    Modifier
+                        .padding(4.dp)
+                        .clickable { onRecipeSelected(recipe.id) },
             )
         } else {
             recipe.getRemoteImageUrl()?.let {
@@ -91,7 +95,8 @@ fun RecipeListItem(
                     modifier =
                         Modifier
                             .size(50.dp)
-                            .clip(RoundedCornerShape(16.dp)),
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { onRecipeSelected(recipe.id) },
                     alignment = Alignment.Center,
                 )
             }

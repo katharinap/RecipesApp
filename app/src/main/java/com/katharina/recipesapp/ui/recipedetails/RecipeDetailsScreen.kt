@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -53,8 +55,8 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
-import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.utils.LoadingScreen
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.TagItem
 import java.time.LocalDateTime
@@ -67,53 +69,55 @@ fun RecipeDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
-        RecipeDetailsViewModel.UiState.Loading -> {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    RecipeBottomAppBar(navController = navController)
-                },
-            ) { innerPadding ->
-                LoadingScreen(Modifier.padding(innerPadding))
+    val recipe =
+        when (uiState) {
+            is RecipeDetailsViewModel.UiState.Success -> {
+                (uiState as RecipeDetailsViewModel.UiState.Success).recipe
+            }
+
+            else -> {
+                null
             }
         }
 
-        is RecipeDetailsViewModel.UiState.Success -> {
-            val recipe = (uiState as RecipeDetailsViewModel.UiState.Success).recipe
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            RecipeDetailsTopBar(
+                recipe = recipe,
+                onToggleStarred = viewModel::toggleStarred,
+            )
+        },
+        bottomBar = {
+            RecipeBottomAppBar(navController = navController)
+        },
+        floatingActionButton = {
+            RecipeDetailsRefreshButton(
+                recipe = recipe,
+                onRefresh = viewModel::updateRecipe,
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { innerPadding ->
 
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                topBar = {
-                    RecipeDetailsTopBar(
-                        recipe = recipe,
-                        onToggleStarred = viewModel::toggleStarred,
-                    )
-                },
-                bottomBar = {
-                    RecipeBottomAppBar(navController = navController)
-                },
-                floatingActionButton = {
-                    RecipeDetailsRefreshButton(
-                        recipe = recipe,
-                        onRefresh = viewModel::updateRecipe,
-                    )
-                },
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-            ) { innerPadding ->
+        when (uiState) {
+            is RecipeDetailsViewModel.UiState.Loading -> {
+                LoadingScreen(Modifier.padding(innerPadding))
+            }
 
+            is RecipeDetailsViewModel.UiState.Success -> {
                 RecipeDetails(
-                    recipe = recipe,
+                    recipe = recipe!!,
                     onAddIngredientsToShoppingList = viewModel::addIngredientsToShoppingList,
                     Modifier.padding(innerPadding),
                 )
+            }
+        }
 
-                if (viewModel.message.isNotEmpty()) {
-                    LaunchedEffect(snackbarHostState, viewModel, viewModel.message) {
-                        snackbarHostState.showSnackbar(viewModel.message)
-                        viewModel.snackbarMessageShown()
-                    }
-                }
+        if (viewModel.message.isNotEmpty()) {
+            LaunchedEffect(snackbarHostState, viewModel, viewModel.message) {
+                snackbarHostState.showSnackbar(viewModel.message)
+                viewModel.snackbarMessageShown()
             }
         }
     }
@@ -172,93 +176,101 @@ fun RecipeDetails(
             }
         }
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+        Card(
+            modifier = Modifier.padding(4.dp).fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         ) {
-            Text(
-                text = if (recipe.isGerman()) stringResource(R.string.ingredients_de) else stringResource(R.string.ingredients_en),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            IconButton(
-                onClick = { onAddIngredientsToShoppingList(recipe) },
-                colors =
-                    IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                    ),
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp).fillMaxWidth(),
             ) {
-                Icon(painter = painterResource(R.drawable.outline_list_alt_add_24), contentDescription = "Add to Shopping List")
+                Text(
+                    text =
+                        if (recipe.isGerman()) {
+                            stringResource(R.string.ingredients_de)
+                        } else {
+                            stringResource(
+                                R.string.ingredients_en,
+                            )
+                        },
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                IconButton(
+                    onClick = { onAddIngredientsToShoppingList(recipe) },
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_list_alt_add_24),
+                        contentDescription = "Add to Shopping List",
+                    )
+                }
+            }
+            recipe.ingredients.forEach { ingredient ->
+                Text(
+                    text = "• $ingredient",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(4.dp),
+                )
             }
         }
-        recipe.ingredients.forEach { ingredient ->
-            Text(
-                text = "• $ingredient",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
 
-        Text(
-            text = if (recipe.isGerman()) stringResource(R.string.direction_de) else stringResource(R.string.direction_en),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 8.dp),
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         recipe.directions.forEach { direction ->
             Text(
                 text = direction,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(top = 4.dp),
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailsTopBar(
-    recipe: Recipe,
+    recipe: Recipe?,
     onToggleStarred: () -> Unit,
 ) {
+    if (recipe == null) {
+        return
+    }
+
     TopAppBar(
         title = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onToggleStarred) {
                     Icon(
-                        painter = painterResource(R.drawable.baseline_cookie_24),
-                        contentDescription = "Cookie",
-                    )
-                    Text(
-                        text = recipe.title,
-                        modifier =
-                            Modifier.padding(
-                                start = 10.dp,
-                            ),
+                        painter =
+                            if (recipe.starred) {
+                                painterResource(R.drawable.baseline_star_24)
+                            } else {
+                                painterResource(R.drawable.outline_star_24)
+                            },
+                        contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onToggleStarred) {
-                        Icon(
-                            painter =
-                                if (recipe.starred) {
-                                    painterResource(R.drawable.baseline_star_24)
-                                } else {
-                                    painterResource(R.drawable.outline_star_24)
-                                },
-                            contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                }
+                Text(
+                    text = recipe.title,
+                    modifier =
+                        Modifier.padding(
+                            start = 10.dp,
+                        ),
+                )
             }
         },
         modifier = Modifier.fillMaxWidth(),
@@ -272,9 +284,13 @@ fun RecipeDetailsTopBar(
 
 @Composable
 fun RecipeDetailsRefreshButton(
+    recipe: Recipe?,
     onRefresh: () -> Unit = {},
-    recipe: Recipe,
 ) {
+    if (recipe == null) {
+        return
+    }
+
     var isMenuOpen by remember { mutableStateOf(false) }
 
     if (isMenuOpen) {

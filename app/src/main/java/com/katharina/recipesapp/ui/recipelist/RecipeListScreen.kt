@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,8 +48,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.katharina.recipesapp.R
-import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
+import com.katharina.recipesapp.ui.utils.LoadingScreen
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.RecipeList
 import com.katharina.recipesapp.ui.utils.TagItem
@@ -127,31 +128,43 @@ fun RecipeListTopBar(
             color = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            SearchBar(
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        query = query,
-                        onQueryChange = onSearch,
-                        onSearch = onSearch,
-                        expanded = false,
-                        onExpandedChange = {},
-                        placeholder = { Text("Search") },
-                        leadingIcon = {
-                            IconButton(onClick = { showSearchField = false }) {
-                                Icon(Icons.Default.Search, contentDescription = "Search")
-                            }
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { onSearch("") }) {
-                                Icon(Icons.Default.Clear, "Clear")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                },
-                expanded = false,
-                onExpandedChange = { },
-            ) { }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                SearchBar(
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = query,
+                            onQueryChange = onSearch,
+                            onSearch = onSearch,
+                            expanded = false,
+                            onExpandedChange = {},
+                            placeholder = { Text("Search") },
+                            leadingIcon = {
+                                IconButton(onClick = { showSearchField = false }) {
+                                    Icon(Icons.Default.Search, contentDescription = "Search")
+                                }
+                            },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        onSearch("")
+                                        showSearchField = false
+                                    },
+                                ) {
+                                    Icon(Icons.Default.Clear, "Clear")
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    expanded = false,
+                    onExpandedChange = { },
+                ) { }
+                Spacer(modifier = Modifier.padding(4.dp))
+            }
         }
     } else {
         TopAppBar(
@@ -198,9 +211,7 @@ fun TagSearchDialog(
         Card(
             modifier =
                 Modifier
-//                    .fillMaxSize()
                     .fillMaxWidth()
-//                    .height(400.dp)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
             shape = RoundedCornerShape(16.dp),
