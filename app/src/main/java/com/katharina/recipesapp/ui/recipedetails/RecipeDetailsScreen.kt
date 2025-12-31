@@ -3,7 +3,9 @@ package com.katharina.recipesapp.ui.recipedetails
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -93,7 +95,7 @@ fun RecipeDetailsScreen(
             RecipeBottomAppBar(navController = navController)
         },
         floatingActionButton = {
-            RecipeDetailsRefreshButton(
+            RecipeDetailsFAB(
                 recipe = recipe,
                 onRefresh = viewModel::updateRecipe,
             )
@@ -236,7 +238,6 @@ fun RecipeDetails(
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-//        HorizontalDivider(modifier = Modifier.height(2.dp))
         Spacer(modifier = Modifier.height(16.dp))
 
         recipe.directions.forEach { direction ->
@@ -299,7 +300,7 @@ fun RecipeDetailsTopBar(
 }
 
 @Composable
-fun RecipeDetailsRefreshButton(
+fun RecipeDetailsFAB(
     recipe: Recipe?,
     onRefresh: () -> Unit = {},
 ) {
@@ -325,8 +326,16 @@ fun RecipeDetailsRefreshButton(
             )
         val context = LocalContext.current
 
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable { isMenuOpen = false },
+        ) {}
         Column(
             horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.fillMaxSize(),
         ) {
             ExtendedFloatingActionButton(
                 icon = {
