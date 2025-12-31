@@ -1,24 +1,33 @@
 package com.katharina.recipesapp.ui.recipedetails
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -27,7 +36,9 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -43,8 +54,6 @@ import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.LoadingScreen
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
-import com.katharina.recipesapp.ui.utils.LinkShare
-import com.katharina.recipesapp.ui.utils.LinkShareDisabled
 import com.katharina.recipesapp.ui.utils.RecipeBottomAppBar
 import com.katharina.recipesapp.ui.utils.TagItem
 import java.time.LocalDateTime
@@ -83,7 +92,12 @@ fun RecipeDetailsScreen(
                 bottomBar = {
                     RecipeBottomAppBar(navController = navController)
                 },
-                floatingActionButton = { RecipeDetailsRefreshButton(onClick = viewModel::updateRecipe) },
+                floatingActionButton = {
+                    RecipeDetailsRefreshButton(
+                        recipe = recipe,
+                        onRefresh = viewModel::updateRecipe,
+                    )
+                },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
             ) { innerPadding ->
 
@@ -243,12 +257,6 @@ fun RecipeDetailsTopBar(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-
-                    if (recipe.source != null && recipe.source.startsWith("http")) {
-                        LinkShare(link = recipe.source, context = LocalContext.current)
-                    } else {
-                        LinkShareDisabled()
-                    }
                 }
             }
         },
@@ -262,11 +270,91 @@ fun RecipeDetailsTopBar(
 }
 
 @Composable
-fun RecipeDetailsRefreshButton(onClick: () -> Unit) {
-    val showButton = false
-    if (showButton) {
-        FloatingActionButton(onClick = onClick) {
-            Icon(Icons.Default.Refresh, contentDescription = "Update Recipe")
+fun RecipeDetailsRefreshButton(
+    onRefresh: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    onShare: () -> Unit = {},
+    recipe: Recipe,
+) {
+    var isMenuOpen by remember { mutableStateOf(false) }
+
+    if (isMenuOpen) {
+        val sendIntent: Intent =
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, recipe.source)
+                type = "text/plain"
+            }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        val context = LocalContext.current
+
+        Column(
+            horizontalAlignment = Alignment.End,
+        ) {
+            ExtendedFloatingActionButton(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Update Recipe",
+                    )
+                },
+                text = { Text(text = "Update") },
+                onClick = {
+                    onRefresh()
+                    isMenuOpen = false
+                },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            ExtendedFloatingActionButton(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share Recipe",
+                    )
+                },
+                text = { Text(text = "Share") },
+                onClick = {
+                    context.startActivity(shareIntent)
+                    isMenuOpen = false
+                },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            if (recipe.hasUrlSource()) {
+                ExtendedFloatingActionButton(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Recipe",
+                        )
+                    },
+                    text = { Text(text = "Edit") },
+                    onClick = {
+                        onEdit()
+                        isMenuOpen = false
+                    },
+                )
+            }
+
+            SmallFloatingActionButton(
+                onClick = { isMenuOpen = !isMenuOpen },
+                shape = CircleShape,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close FAB menu",
+                )
+            }
+        }
+    } else {
+        SmallFloatingActionButton(
+            onClick = { isMenuOpen = !isMenuOpen },
+            shape = CircleShape,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Open FAB menu",
+            )
         }
     }
 }

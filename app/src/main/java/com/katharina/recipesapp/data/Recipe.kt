@@ -25,4 +25,6 @@ data class Recipe(
     }
 
     fun isGerman(): Boolean = language == "german"
+
+    fun hasUrlSource(): Boolean = source != null && source.startsWith("http")
 }
