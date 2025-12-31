@@ -20,9 +20,11 @@ data class Recipe(
         if (imageUrl == null) {
             return null
         } else {
-            return Constants.IMAGE_BASE_URL + imageUrl
+            return Constants.WEB_BASE_URL + imageUrl
         }
     }
+
+    fun getEditUrl(): String = Constants.WEB_BASE_URL + "/recipes/$id/edit"
 
     fun isGerman(): Boolean = language == "german"
 

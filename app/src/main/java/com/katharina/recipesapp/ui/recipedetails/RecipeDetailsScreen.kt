@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -272,8 +273,6 @@ fun RecipeDetailsTopBar(
 @Composable
 fun RecipeDetailsRefreshButton(
     onRefresh: () -> Unit = {},
-    onEdit: () -> Unit = {},
-    onShare: () -> Unit = {},
     recipe: Recipe,
 ) {
     var isMenuOpen by remember { mutableStateOf(false) }
@@ -285,8 +284,13 @@ fun RecipeDetailsRefreshButton(
                 putExtra(Intent.EXTRA_TEXT, recipe.source)
                 type = "text/plain"
             }
-
         val shareIntent = Intent.createChooser(sendIntent, null)
+
+        val editIntent =
+            Intent(
+                Intent.ACTION_VIEW,
+                recipe.getEditUrl().toUri(),
+            )
         val context = LocalContext.current
 
         Column(
@@ -330,7 +334,7 @@ fun RecipeDetailsRefreshButton(
                     },
                     text = { Text(text = "Edit") },
                     onClick = {
-                        onEdit()
+                        context.startActivity(editIntent)
                         isMenuOpen = false
                     },
                 )

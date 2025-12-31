@@ -49,7 +49,7 @@ object NetworkModule {
     ): LoginService =
         Retrofit
             .Builder()
-            .baseUrl(Constants.BASE_URL)
+            .baseUrl(Constants.API_BASE_URL)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .client(client)
             .build()
@@ -81,7 +81,7 @@ object NetworkModule {
     ): RefreshTokenService =
         Retrofit
             .Builder()
-            .baseUrl(Constants.BASE_URL)
+            .baseUrl(Constants.API_BASE_URL)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .client(client)
             .build()
@@ -117,7 +117,7 @@ object NetworkModule {
     ): ApiService =
         Retrofit
             .Builder()
-            .baseUrl(Constants.BASE_URL)
+            .baseUrl(Constants.API_BASE_URL)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .client(client)
             .build()
