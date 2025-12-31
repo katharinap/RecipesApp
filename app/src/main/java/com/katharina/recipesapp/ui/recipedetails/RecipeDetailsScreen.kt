@@ -2,6 +2,7 @@ package com.katharina.recipesapp.ui.recipedetails
 
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -177,13 +178,17 @@ fun RecipeDetails(
         }
 
         Card(
-            modifier = Modifier.padding(4.dp).fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            modifier =
+                Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.secondaryContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp).fillMaxWidth(),
+                modifier = Modifier.padding(all = 4.dp).fillMaxWidth(),
             ) {
                 Text(
                     text =
@@ -212,15 +217,26 @@ fun RecipeDetails(
                 }
             }
             recipe.ingredients.forEach { ingredient ->
-                Text(
-                    text = "• $ingredient",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(4.dp),
-                )
+                Row(verticalAlignment = Alignment.Top) {
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
+
+                    Text(
+                        text = ingredient,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
+//        HorizontalDivider(modifier = Modifier.height(2.dp))
         Spacer(modifier = Modifier.height(16.dp))
 
         recipe.directions.forEach { direction ->
