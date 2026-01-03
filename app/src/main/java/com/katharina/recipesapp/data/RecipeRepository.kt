@@ -69,7 +69,7 @@ class DefaultRecipesRepository
         override suspend fun fetchRecipe(recipeId: Int): String {
             val response = networkRepository.getRecipe(recipeId)
             if (response is NetworkResult.Success) {
-                val starred = dbRepository.getRecipe(recipeId)?.starred!!
+                val starred = dbRepository.getRecipe(recipeId)?.starred ?: false
                 val recipe = response.data.copy(updatedAtLocally = LocalDateTime.now(), starred = starred)
                 dbRepository.updateRecipe(recipe)
                 return "Successfully fetched recipe ${response.data.title}"

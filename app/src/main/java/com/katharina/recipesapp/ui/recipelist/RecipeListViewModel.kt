@@ -63,9 +63,14 @@ class RecipeListViewModel
 
         fun updateRecipes() {
             viewModelScope.launch {
-                val force = false
-                val text = recipeRepository.fetchRecipes(force)
-                showSnackbarMessage(text)
+                try {
+                    val force = false
+                    val text = recipeRepository.fetchRecipes(force)
+                    showSnackbarMessage(text)
+                } catch (exception: Error) {
+                    showSnackbarMessage(exception.message ?: "Unknown error")
+                    println(exception.message)
+                }
             }
         }
 
