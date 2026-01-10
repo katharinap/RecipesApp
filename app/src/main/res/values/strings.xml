@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Recipes App</string>
+    <string name="app_name">Recipes</string>
     <string name="ingredients_de">Zutaten</string>
     <string name="ingredients_en">Ingredients</string>
     <string name="direction_de">Schritte</string>
