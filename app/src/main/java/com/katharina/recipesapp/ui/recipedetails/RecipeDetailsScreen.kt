@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -90,6 +91,8 @@ fun RecipeDetailsScreen(
             RecipeDetailsTopBar(
                 recipe = recipe,
                 onToggleStarred = viewModel::toggleStarred,
+                keepScreenOn = viewModel.keepScreenOn,
+                toggleKeepScreenOn = viewModel::toggleKeepScreenOn,
             )
         },
         bottomBar = {
@@ -99,6 +102,8 @@ fun RecipeDetailsScreen(
             RecipeDetailsFAB(
                 recipe = recipe,
                 onRefresh = viewModel::updateRecipe,
+                keepScreenOn = viewModel.keepScreenOn,
+                toggleKeepScreenOn = viewModel::toggleKeepScreenOn,
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -230,7 +235,6 @@ fun RecipeDetails(
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(start = 8.dp),
                             )
-
                         }
                     } else {
                         Text(
@@ -272,11 +276,12 @@ fun RecipeDetails(
 fun RecipeDetailsTopBar(
     recipe: Recipe?,
     onToggleStarred: () -> Unit,
+    keepScreenOn: Boolean = false,
+    toggleKeepScreenOn: () -> Unit = {},
 ) {
     if (recipe == null) {
         return
     }
-
     TopAppBar(
         title = {
             Row(
@@ -294,6 +299,18 @@ fun RecipeDetailsTopBar(
                         contentDescription = if (recipe.starred) "Remove from favorites" else "Add to favorites",
                         tint = MaterialTheme.colorScheme.primary,
                     )
+                }
+                if (keepScreenOn) {
+                    IconButton(
+                        onClick = toggleKeepScreenOn,
+                        modifier = Modifier.keepScreenOn(),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_light_on_24),
+                            contentDescription = "Keep screen on",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
                 Text(
                     text = recipe.title,
@@ -317,6 +334,8 @@ fun RecipeDetailsTopBar(
 fun RecipeDetailsFAB(
     recipe: Recipe?,
     onRefresh: () -> Unit = {},
+    keepScreenOn: Boolean = false,
+    toggleKeepScreenOn: () -> Unit = {},
 ) {
     if (recipe == null) {
         return
@@ -351,6 +370,28 @@ fun RecipeDetailsFAB(
             verticalArrangement = Arrangement.Bottom,
             modifier = Modifier.fillMaxSize(),
         ) {
+            ExtendedFloatingActionButton(
+                icon = {
+                    Icon(
+                        painter =
+                            if (keepScreenOn) {
+                                painterResource(
+                                    R.drawable.outline_light_off_24,
+                                )
+                            } else {
+                                painterResource(R.drawable.outline_light_on_24)
+                            },
+                        contentDescription = "Keep Screen On",
+                    )
+                },
+                text = { Text(text = "Keep Screen On") },
+                onClick = {
+                    toggleKeepScreenOn()
+                    isMenuOpen = false
+                },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
             ExtendedFloatingActionButton(
                 icon = {
                     Icon(
@@ -424,7 +465,7 @@ fun RecipeDetailsTopBarPreview() {
     val recipe =
         Recipe(
             id = 1,
-            title = "Recipe 1",
+            title = "Very very very very very long recipe name",
         )
     RecipesAppTheme {
         RecipeDetailsTopBar(
@@ -441,8 +482,15 @@ fun RecipeDetailsPreview() {
         Recipe(
             id = 1,
             title = "Recipe 1",
-            ingredients = listOf("Part One:", "Ingredient 1", "Ingredient 2",
-                "Part Two:", "Ingredient 3", "Ingredient 4"),
+            ingredients =
+                listOf(
+                    "Part One:",
+                    "Ingredient 1",
+                    "Ingredient 2",
+                    "Part Two:",
+                    "Ingredient 3",
+                    "Ingredient 4",
+                ),
             directions = listOf("Direction 1", "Direction 2"),
             tags = listOf("tag1", "tag2"),
             updatedAtRemotely = LocalDateTime.now(),

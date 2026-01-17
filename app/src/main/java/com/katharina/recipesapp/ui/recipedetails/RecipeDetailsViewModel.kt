@@ -34,6 +34,9 @@ class RecipeDetailsViewModel
 
         var message by mutableStateOf("")
             private set
+
+        var keepScreenOn by mutableStateOf(false)
+
         private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
         val uiState: StateFlow<UiState> = _uiState
 
@@ -108,5 +111,14 @@ class RecipeDetailsViewModel
 
         private fun showSnackbarMessage(text: String) {
             message = text
+        }
+
+        override fun onCleared() {
+            super.onCleared()
+            keepScreenOn = false
+        }
+
+        fun toggleKeepScreenOn() {
+            keepScreenOn = !keepScreenOn
         }
     }
