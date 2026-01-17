@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.katharina.recipesapp.data.Ingredient
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.data.RecipeRepository
 import com.katharina.recipesapp.data.ShoppingListRepository
@@ -77,7 +78,9 @@ class RecipeDetailsViewModel
         fun addIngredientsToShoppingList(recipe: Recipe) {
             viewModelScope.launch {
                 recipe.ingredients.forEach { ingredient ->
-                    shoppingListRepository.addIngredient(ingredient)
+                    if (!Ingredient.isHeading(ingredient)) {
+                        shoppingListRepository.addIngredient(ingredient)
+                    }
                 }
                 showSnackbarMessage("Added ingredients to shopping list")
             }

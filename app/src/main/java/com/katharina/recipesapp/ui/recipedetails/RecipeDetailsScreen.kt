@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.katharina.recipesapp.R
+import com.katharina.recipesapp.data.Ingredient
 import com.katharina.recipesapp.data.Recipe
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 import com.katharina.recipesapp.ui.utils.LoadingScreen
@@ -220,19 +221,32 @@ fun RecipeDetails(
             }
             recipe.ingredients.forEach { ingredient ->
                 Row(verticalAlignment = Alignment.Top) {
-                    Text(
-                        text = "•",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
+                    if (Ingredient.isHeading(ingredient)) {
+                        Column {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = ingredient.replace(":", ""),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
 
-                    Text(
-                        text = ingredient,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
+                        }
+                    } else {
+                        Text(
+                            text = "•",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+
+                        Text(
+                            text = ingredient,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -427,7 +441,8 @@ fun RecipeDetailsPreview() {
         Recipe(
             id = 1,
             title = "Recipe 1",
-            ingredients = listOf("Ingredient 1", "Ingredient 2"),
+            ingredients = listOf("Part One:", "Ingredient 1", "Ingredient 2",
+                "Part Two:", "Ingredient 3", "Ingredient 4"),
             directions = listOf("Direction 1", "Direction 2"),
             tags = listOf("tag1", "tag2"),
             updatedAtRemotely = LocalDateTime.now(),
