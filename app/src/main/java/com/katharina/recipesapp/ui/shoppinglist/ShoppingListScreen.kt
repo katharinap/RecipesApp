@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,11 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.katharina.recipesapp.R
 import com.katharina.recipesapp.data.ShoppingListItem
 import com.katharina.recipesapp.ui.theme.RecipesAppTheme
 import com.katharina.recipesapp.ui.theme.handwritingFamily
@@ -82,7 +81,10 @@ fun ShoppingListFab(onClick: () -> Unit) {
             onClick = onClick,
             shape = CircleShape,
         ) {
-            Icon(Icons.Default.Done, contentDescription = "Delete All")
+            Icon(
+                painter = painterResource(R.drawable.outline_check_24),
+                contentDescription = "Delete All",
+            )
         }
     }
 }
@@ -144,7 +146,7 @@ fun ShoppingListTopBar(
                         leadingIcon = {
                             IconButton(onClick = { onUpdateNextItem("") }) {
                                 Icon(
-                                    imageVector = Icons.Default.Clear,
+                                    painter = painterResource(R.drawable.outline_close_small_24),
                                     contentDescription = "Clear",
                                 )
                             }
@@ -152,7 +154,7 @@ fun ShoppingListTopBar(
                         trailingIcon = {
                             IconButton(onClick = { onAddItem() }) {
                                 Icon(
-                                    imageVector = Icons.Default.Done,
+                                    painter = painterResource(R.drawable.outline_check_24),
                                     contentDescription = "Add",
                                 )
                             }

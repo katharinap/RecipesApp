@@ -13,10 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -144,7 +140,10 @@ fun RecipeListTopBar(
                             placeholder = { Text("Search") },
                             leadingIcon = {
                                 IconButton(onClick = { showSearchField = false }) {
-                                    Icon(Icons.Default.Search, contentDescription = "Search")
+                                    Icon(
+                                        painter = painterResource(R.drawable.outline_search_24),
+                                        contentDescription = "Search",
+                                    )
                                 }
                             },
                             trailingIcon = {
@@ -154,7 +153,10 @@ fun RecipeListTopBar(
                                         showSearchField = false
                                     },
                                 ) {
-                                    Icon(Icons.Default.Clear, "Clear")
+                                    Icon(
+                                        painter = painterResource(R.drawable.outline_close_small_24),
+                                        contentDescription = "Clear",
+                                    )
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
@@ -184,7 +186,7 @@ fun RecipeListTopBar(
 
                     IconButton(onClick = { showSearchField = true }) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            painter = painterResource(R.drawable.outline_search_24),
                             contentDescription = "Tags",
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -252,7 +254,10 @@ fun RecipeListRefreshButton(onClick: () -> Unit) {
         onClick = onClick,
         shape = CircleShape,
     ) {
-        Icon(Icons.Default.Refresh, contentDescription = "Update Recipes")
+        Icon(
+            painter = painterResource(R.drawable.outline_refresh_24),
+            contentDescription = "Update Recipes",
+        )
     }
 }
 

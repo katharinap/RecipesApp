@@ -17,12 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -395,7 +389,7 @@ fun RecipeDetailsFAB(
             ExtendedFloatingActionButton(
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Refresh,
+                        painter = painterResource(R.drawable.outline_refresh_24),
                         contentDescription = "Update Recipe",
                     )
                 },
@@ -409,7 +403,7 @@ fun RecipeDetailsFAB(
             ExtendedFloatingActionButton(
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Share,
+                        painter = painterResource(R.drawable.outline_share_24),
                         contentDescription = "Share Recipe",
                     )
                 },
@@ -424,7 +418,7 @@ fun RecipeDetailsFAB(
                 ExtendedFloatingActionButton(
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            painter = painterResource(R.drawable.outline_edit_24),
                             contentDescription = "Edit Recipe",
                         )
                     },
@@ -441,7 +435,7 @@ fun RecipeDetailsFAB(
                 shape = CircleShape,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Close,
+                    painter = painterResource(R.drawable.outline_close_24),
                     contentDescription = "Close FAB menu",
                 )
             }
@@ -452,7 +446,7 @@ fun RecipeDetailsFAB(
             shape = CircleShape,
         ) {
             Icon(
-                imageVector = Icons.Default.Add,
+                painter = painterResource(R.drawable.outline_add_24),
                 contentDescription = "Open FAB menu",
             )
         }
