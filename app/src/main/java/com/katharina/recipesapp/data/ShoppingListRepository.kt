@@ -15,6 +15,8 @@ interface ShoppingListRepository {
     suspend fun deleteAllShoppingListItems()
 
     suspend fun addIngredient(ingredient: String)
+
+    suspend fun checkAllShoppingListItems()
 }
 
 @Singleton
@@ -32,4 +34,6 @@ class DefaultShoppingListRepository
         override suspend fun deleteAllShoppingListItems() = dbRepository.deleteAllShoppingListItems()
 
         override suspend fun addIngredient(ingredient: String) = dbRepository.addShoppingListItem(ingredient)
+
+        override suspend fun checkAllShoppingListItems() = dbRepository.checkAllShoppingListItems()
     }

@@ -67,4 +67,10 @@ class ShoppingListViewModel
                 shoppingListRepository.deleteCheckedShoppingListItems()
             }
         }
+
+        fun checkAll() {
+            viewModelScope.launch {
+                shoppingListRepository.checkAllShoppingListItems()
+            }
+        }
     }

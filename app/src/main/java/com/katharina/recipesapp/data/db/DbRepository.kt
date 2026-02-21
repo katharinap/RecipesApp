@@ -33,6 +33,8 @@ interface DbRepository {
     suspend fun deleteAllShoppingListItems()
 
     suspend fun addShoppingListItem(ingredient: String)
+
+    suspend fun checkAllShoppingListItems()
 }
 
 @Singleton
@@ -85,6 +87,8 @@ class DefaultDbRepository
                 shoppingListDao.createOrUpdate(DbShoppingListItem(name = ingredient))
             }
         }
+
+        override suspend fun checkAllShoppingListItems() = shoppingListDao.checkAll()
 
         private fun DbRecipe.toRecipe(): Recipe =
             Recipe(

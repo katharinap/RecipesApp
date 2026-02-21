@@ -4,10 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -58,7 +58,12 @@ fun ShoppingListScreen(
         bottomBar = {
             RecipeBottomAppBar(navController = navController)
         },
-        floatingActionButton = { ShoppingListFab(onClick = viewModel::deleteAllChecked) },
+        floatingActionButton = {
+            ShoppingListFab(
+                onClearChecked = viewModel::deleteAllChecked,
+                onCheckAll = viewModel::checkAll,
+            )
+        },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
         when (uiState) {
@@ -75,14 +80,27 @@ fun ShoppingListScreen(
 }
 
 @Composable
-fun ShoppingListFab(onClick: () -> Unit) {
-    Row {
+fun ShoppingListFab(
+    onClearChecked: () -> Unit,
+    onCheckAll: () -> Unit,
+) {
+    Column {
         SmallFloatingActionButton(
-            onClick = onClick,
+            onClick = onCheckAll,
             shape = CircleShape,
         ) {
             Icon(
                 painter = painterResource(R.drawable.outline_check_24),
+                contentDescription = "Check All",
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        SmallFloatingActionButton(
+            onClick = onClearChecked,
+            shape = CircleShape,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_close_24),
                 contentDescription = "Delete All",
             )
         }
