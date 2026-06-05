@@ -8,16 +8,24 @@ plugins {
     alias(libs.plugins.room)
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.name == "kotlinx-metadata-jvm" || requested.name == "kotlin-metadata-jvm") {
+            useTarget("org.jetbrains.kotlin:kotlin-metadata-jvm:${libs.versions.metadataVersion.get()}")
+        }
+    }
+}
+
 android {
     namespace = "com.katharina.recipesapp"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.katharina.recipesapp"
         minSdk = 33
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
