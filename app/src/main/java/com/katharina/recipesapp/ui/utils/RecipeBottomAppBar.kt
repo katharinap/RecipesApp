@@ -17,7 +17,10 @@ import com.katharina.recipesapp.AppDestination
 import com.katharina.recipesapp.R
 
 @Composable
-fun RecipeBottomAppBar(navController: NavHostController) {
+fun RecipeBottomAppBar(
+    navController: NavHostController,
+    showLogin: Boolean = false,
+) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
@@ -30,23 +33,43 @@ fun RecipeBottomAppBar(navController: NavHostController) {
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.primary,
         ) {
-            NavigationBarItem(
-                selected = currentDestination?.route == AppDestination.RecipeFavorites::class.qualifiedName,
-                onClick = { navController.navigate(AppDestination.RecipeFavorites) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_star_24),
-                        contentDescription = "Favorites",
-                    )
-                },
-                label = { Text("Favorites") },
-                colors =
-                    NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.tertiary,
-                        selectedTextColor = MaterialTheme.colorScheme.tertiary,
-                        indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    ),
-            )
+            if (showLogin) {
+                NavigationBarItem(
+                    selected = currentDestination?.route == AppDestination.Login::class.qualifiedName,
+                    onClick = { navController.navigate(AppDestination.Login) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_face_24),
+                            contentDescription = "Login",
+                        )
+                    },
+                    label = { Text("Login") },
+                    colors =
+                        NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                            selectedTextColor = MaterialTheme.colorScheme.tertiary,
+                            indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        ),
+                )
+            } else {
+                NavigationBarItem(
+                    selected = currentDestination?.route == AppDestination.RecipeFavorites::class.qualifiedName,
+                    onClick = { navController.navigate(AppDestination.RecipeFavorites) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_star_24),
+                            contentDescription = "Login",
+                        )
+                    },
+                    label = { Text("Favorites") },
+                    colors =
+                        NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                            selectedTextColor = MaterialTheme.colorScheme.tertiary,
+                            indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        ),
+                )
+            }
             NavigationBarItem(
                 selected = currentDestination?.route == AppDestination.RecipeList::class.qualifiedName,
                 onClick = { navController.navigate(AppDestination.RecipeList) },

@@ -69,7 +69,7 @@ fun RecipeListScreen(
             )
         },
         bottomBar = {
-            RecipeBottomAppBar(navController = navController)
+            RecipeBottomAppBar(navController = navController, showLogin = false)
         },
         floatingActionButton = { RecipeListRefreshButton(onClick = viewModel::updateRecipes) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
